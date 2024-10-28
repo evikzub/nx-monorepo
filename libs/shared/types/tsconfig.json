@@ -7,11 +7,7 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "composite": true,
-    "declaration": true,
-    "outDir": "./dist",
-    "rootDir": "src"
+    "noPropertyAccessFromIndexSignature": true
   },
   "files": [],
   "include": [],

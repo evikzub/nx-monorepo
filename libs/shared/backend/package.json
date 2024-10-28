@@ -1,25 +1,6 @@
 {
-  "name": "@microservices-app/shared-backend",
+  "name": "@nx-test/backend",
   "version": "0.0.1",
-  "dependencies": {
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/config": "^3.3.0",
-    "@microservices-app/types": "*",
-    "drizzle-orm": "^0.35.3",
-    "dotenv": "^16.4.5",
-    "tslib": "^2.3.0"
-  },
-  "devDependencies": {
-    "drizzle-kit": "^0.20.14",
-    "@types/pg": "^8.11.0"
-  },
-  "type": "commonjs",
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts",
-  "private": true,
-  "peerDependencies": {
-    "@nestjs/common": "^10.4.6",
-    "@nestjs/config": "^3.3.0",
-    "@microservices-app/types": "*"
-  }
+  "dependencies": {},
+  "private": true
 }
