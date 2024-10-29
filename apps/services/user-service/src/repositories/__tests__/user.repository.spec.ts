@@ -1,4 +1,4 @@
-import { Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
 import { UserRepository } from '../user.repository';
@@ -6,9 +6,10 @@ import { NewUser } from '@microservices-app/shared/types';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
+  let moduleRef: TestingModule;
 
   beforeAll(async () => {
-    const module = await Test.createTestingModule({
+    moduleRef = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           load: [loadConfiguration],
@@ -18,7 +19,10 @@ describe('UserRepository', () => {
       providers: [UserRepository],
     }).compile();
 
-    repository = module.get<UserRepository>(UserRepository);
+    // Initialize the module to trigger onModuleInit hooks
+    await moduleRef.init();
+
+    repository = moduleRef.get<UserRepository>(UserRepository);
   });
 
   it('should create a user', async () => {

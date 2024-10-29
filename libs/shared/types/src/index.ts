@@ -10,3 +10,6 @@ export * from './database/repository.types';
 
 // Errors
 export * from './errors/application-errors';
+
+// DTOs
+export * from './validators/user.schema';

@@ -1,0 +1,19 @@
+GET http://localhost:3011/api/users
+
+### Get a user by ID
+@id = 8303242c-3511-4fc7-a9c3-d79ac8027679
+GET http://localhost:3011/api/users/{{id}}
+
+
+### Create a user
+POST http://localhost:3011/api/users
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "password": "password"
+}
+
+
