@@ -5,6 +5,7 @@ import { UserRepository } from '../../repositories/user.repository';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
 import { NewUser } from '@microservices-app/shared/types';
+import { NotFoundError } from '@microservices-app/shared/types';
 
 describe('UserService', () => {
   let service: UserService;
@@ -22,7 +23,6 @@ describe('UserService', () => {
       providers: [UserService, UserRepository],
     }).compile();
 
-    // Initialize the module to trigger onModuleInit hooks
     await moduleRef.init();
 
     service = moduleRef.get<UserService>(UserService);
@@ -38,7 +38,18 @@ describe('UserService', () => {
     try {
       const users = await repository.findAll();
       if (users.length > 0) {
-        await Promise.all(users.map(user => repository.hardDelete(user.id)));
+        await Promise.all(
+          users.map(async (user) => {
+            try {
+              await repository.hardDelete(user.id);
+            } catch (error) {
+              // Ignore NotFoundError during cleanup
+              if (!(error instanceof NotFoundError)) {
+                throw error;
+              }
+            }
+          })
+        );
       }
     } catch (error) {
       console.error('Error cleaning up database:', error);
@@ -69,12 +80,23 @@ describe('UserService', () => {
         lastName: 'User',
       };
 
+      // Create first user
+      await service.createUser(newUser);
+
+      // Try to create duplicate
       await expect(service.createUser(newUser)).rejects.toThrow(ConflictException);
     });
   });
 
   describe('validateUser', () => {
     it('should validate user with correct credentials', async () => {
+      // Create user
+      await service.createUser({
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User',
+      });
       const user = await service.validateUser('test@example.com', 'password123');
       expect(user).toBeDefined();
       expect(user?.email).toBe('test@example.com');
@@ -88,9 +110,18 @@ describe('UserService', () => {
 
   describe('updateUser', () => {
     it('should update user details', async () => {
+      // Create user
+      await service.createUser({
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User',
+      });
+      // Find user
       const user = await service.findUserByEmail('test@example.com');
       if (!user) throw new Error('Test user not found');
 
+      // Update user
       const updatedUser = await service.updateUser(user.id, {
         firstName: 'Updated',
         lastName: 'Name',
@@ -101,8 +132,10 @@ describe('UserService', () => {
     });
 
     it('should throw NotFoundException for non-existent user', async () => {
+      const nonExistentId = '462253ea-2877-4039-9b9d-8b5758893808';
+      // Try to update non-existent user
       await expect(
-        service.updateUser('non-existent-id', { firstName: 'Test' })
+        service.updateUser(nonExistentId, { firstName: 'Test' })
       ).rejects.toThrow(NotFoundException);
     });
   });

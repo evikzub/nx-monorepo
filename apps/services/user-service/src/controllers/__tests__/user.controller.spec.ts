@@ -31,7 +31,8 @@ describe('UserController Integration Tests', () => {
 
     await moduleRef.init();
 
-    controller = moduleRef.get<UserController>(UserController);
+    //controller = moduleRef.get<UserController>(UserController);
+    controller = await moduleRef.resolve(UserController);
     //service = moduleRef.get<UserService>(UserService);
     repository = moduleRef.get<UserRepository>(UserRepository);
   });
@@ -66,6 +67,8 @@ describe('UserController Integration Tests', () => {
       };
 
       const response = await controller.createUser(createUserDto);
+      expect(response).toHaveProperty('password');
+
       const user = transformResponse(response);
 
       expect(user).toBeDefined();

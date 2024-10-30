@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
-import { loadConfiguration } from './configuration';
+import { loadConfiguration } from './config.loader';
+import { ConfigService } from './config.service';
 
 @Module({
   imports: [
@@ -11,5 +12,7 @@ import { loadConfiguration } from './configuration';
       expandVariables: true,
     }),
   ],
+  providers: [ConfigService],
+  exports: [ConfigService],
 })
 export class ConfigModule {}

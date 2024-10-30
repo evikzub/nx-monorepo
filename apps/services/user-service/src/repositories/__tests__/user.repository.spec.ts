@@ -25,6 +25,19 @@ describe('UserRepository', () => {
     repository = moduleRef.get<UserRepository>(UserRepository);
   });
 
+  beforeEach(async () => {
+    // Clean up database before each test
+    try {
+      const users = await repository.findAll();
+      if (users.length > 0) {
+        await Promise.all(users.map(user => repository.hardDelete(user.id)));
+      }
+    } catch (error) {
+      console.error('Error cleaning up database:', error);
+      throw error;
+    }
+  });
+
   it('should create a user', async () => {
     const newUser: NewUser = {
       email: 'test@example.com',

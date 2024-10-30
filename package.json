@@ -6,7 +6,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx libs/shared/backend/src/database/migrate.ts",
     "db:push": "drizzle-kit push:pg",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "test:cov": "jest --coverage",
+    "test:cov:watch": "jest --coverage --watch"
   },
   "private": true,
   "dependencies": {
@@ -49,6 +51,7 @@
     "@types/jest": "^29.5.12",
     "@types/node": "~18.16.9",
     "@types/pg": "^8.11.10",
+    "@types/supertest": "^6.0.2",
     "drizzle-kit": "^0.26.2",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.0.0",
@@ -57,6 +60,7 @@
     "nx": "20.0.6",
     "prettier": "^2.6.2",
     "rollup": "^4.14.0",
+    "supertest": "^7.0.0",
     "swc-loader": "0.1.15",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",

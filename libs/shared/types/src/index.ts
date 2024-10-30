@@ -1,8 +1,9 @@
 // Config
-export * from './config/environment.types';
+//export * from './config/environment.types';
 
-// Validators
+// Environment
 export * from './validators/environment.schema';
+export * from './validators/environment.keys';
 
 // Database
 export * from './database/schema';

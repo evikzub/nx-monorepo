@@ -4,6 +4,8 @@ import chalk from 'chalk';
 @Injectable()
 export class LoggerService implements NestLoggerService {
   log(message: string, context?: string) {
+    console.log('LOG: MESSAGE: ', message);
+    console.log('LOG: CONTEXT: ', context);
     console.log(this.formatMessage('LOG', message, context, chalk.blue));
   }
 
@@ -36,7 +38,8 @@ export class LoggerService implements NestLoggerService {
     const contextStr = context ? `[${chalk.yellow(context)}] ` : '';
     const levelStr = this.colorLevel(level);
     
-    return `${chalk.gray(timestamp)} ${levelStr} ${contextStr}${colorFn(message)}`;
+    //console.log('CONTEXT: ', contextStr);
+    return `${chalk.gray(timestamp)} ${levelStr} ${colorFn(message)} \n ${contextStr}`;
   }
 
   private colorLevel(level: string): string {

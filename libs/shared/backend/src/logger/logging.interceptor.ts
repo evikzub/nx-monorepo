@@ -6,6 +6,7 @@ import {
   Logger,
   HttpException,
 } from '@nestjs/common';
+import { ConfigService } from '../config/config.service';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -14,6 +15,11 @@ import chalk from 'chalk';
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
+  private readonly isDevelopment: boolean;
+
+  constructor(private readonly configService: ConfigService) {
+    this.isDevelopment = this.configService.envConfig.nodeEnv === 'development';
+  }
 
   private colorMethod(method: string): string {
     switch (method.toUpperCase()) {
@@ -49,7 +55,11 @@ export class LoggingInterceptor implements NestInterceptor {
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    console.log('CONTEXT: ', context.getClass().name);
+    console.log('HANDLER: ', context.getHandler().name);
+    console.log('TYPE: ', context.getType());
     const ctx = context.switchToHttp();
+
     const request = ctx.getRequest<Request>();
     const response = ctx.getResponse<Response>();
     const startTime = Date.now();
@@ -61,20 +71,22 @@ export class LoggingInterceptor implements NestInterceptor {
           const responseTime = Date.now() - startTime;
           const statusCode = response.statusCode;
           
-          this.logger.log(
-            `${this.colorMethod(method)} ${chalk.white(originalUrl)} ${
-              this.colorStatus(statusCode)
-            } ${chalk.yellow(`${responseTime}ms`)} - ${chalk.gray(ip)}`,
-            {
-              method,
-              url: originalUrl,
-              statusCode,
-              responseTime,
-              ip,
-              requestBody: this.sanitizeBody(body),
-              responseData: this.sanitizeData(data),
-            }
-          );
+          const logMessage = `${this.colorMethod(method)} ${chalk.white(originalUrl)} ${
+            this.colorStatus(statusCode)
+          } ${chalk.yellow(`${responseTime}ms`)} - ${chalk.gray(ip)}`;
+
+          const logData = {
+            method,
+            url: originalUrl,
+            statusCode,
+            responseTime,
+            ip,
+            requestBody: this.sanitizeBody(body),
+            responseData: this.sanitizeData(data),
+            timestamp: new Date().toISOString(),
+          };
+
+          this.logger.log(logMessage, JSON.stringify(logData, null, 2), 'HTTP');
         },
         error: (error: Error) => {
           const responseTime = Date.now() - startTime;
@@ -84,20 +96,22 @@ export class LoggingInterceptor implements NestInterceptor {
           
           const errorResponse = this.formatErrorResponse(error);
           
-          this.logger.error(
-            `${this.colorMethod(method)} ${chalk.white(originalUrl)} ${
-              this.colorStatus(statusCode)
-            } ${chalk.yellow(`${responseTime}ms`)} - ${chalk.gray(ip)}`,
-            JSON.stringify({
-              timestamp: new Date().toISOString(),
-              path: originalUrl,
-              method,
-              statusCode,
-              error: errorResponse,
-              requestBody: this.sanitizeBody(body),
-            }, null, 2),
-            'HTTP'
-          );
+          const logMessage = `${this.colorMethod(method)} ${chalk.white(originalUrl)} ${
+            this.colorStatus(statusCode)
+          } ${chalk.yellow(`${responseTime}ms`)} - ${chalk.gray(ip)}`;
+
+          const logData = {
+            method,
+            url: originalUrl,
+            statusCode,
+            responseTime,
+            ip,
+            error: errorResponse,
+            requestBody: this.sanitizeBody(body),
+            timestamp: new Date().toISOString(),
+          };
+
+          this.logger.error(logMessage, JSON.stringify(logData, null, 2), 'HTTP');
         },
       }),
     );
@@ -112,7 +126,7 @@ export class LoggingInterceptor implements NestInterceptor {
         message: typeof response === 'object' 
           ? (response as any).message || error.message
           : response,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        stack: this.isDevelopment ? error.stack : undefined,
         cause: error.cause,
       };
     }
@@ -121,7 +135,7 @@ export class LoggingInterceptor implements NestInterceptor {
       statusCode: 500,
       error: error.name,
       message: error.message,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      stack: this.isDevelopment ? error.stack : undefined,
     };
   }
 
