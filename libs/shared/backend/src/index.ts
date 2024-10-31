@@ -12,3 +12,6 @@ export * from './logger/logging.interceptor';
 // Testing
 export * from './testing/log-tester.helper';
 export * from './testing/test-logger.service';
+// Trace
+export * from './logger/trace.context';
+export * from './logger/trace.types';

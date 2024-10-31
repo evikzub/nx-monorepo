@@ -7,6 +7,12 @@ export enum LogLevel {
   ERROR = 'error'
 }
 
+export enum LogType {
+  REQUEST = 'request',
+  RESPONSE = 'response',
+  ERROR = 'error'
+}
+
 export interface BaseLogEntry {
   timestamp: string;
   level: LogLevel;
@@ -16,7 +22,7 @@ export interface BaseLogEntry {
 }
 
 export interface RequestLogEntry extends BaseLogEntry {
-  type: 'request';
+  type: LogType.REQUEST;
   requestId: string;
   url: string;
   httpMethod: string;
@@ -27,12 +33,20 @@ export interface RequestLogEntry extends BaseLogEntry {
 }
 
 export interface ResponseLogEntry extends BaseLogEntry {
-  type: 'response';
+  type: LogType.RESPONSE;
   requestId: string;
   statusCode: number;
   responseTime: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   responseData?: Record<string, any>;
+  trace?: {
+    totalDuration: number;
+    spans: {
+      name: string;
+      duration: number | null;
+      metadata: Record<string, any> | undefined;
+    }[];
+  };
 }
 
 export interface ErrorResponse {
@@ -46,7 +60,7 @@ export interface ErrorResponse {
 }
 
 export interface ErrorLogEntry extends BaseLogEntry {
-  type: 'error';
+  type: LogType.ERROR;
   requestId: string;
   error: ErrorResponse;
   url: string;

@@ -26,7 +26,9 @@ export class LogTester {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     responseData?: Record<string, any>;
   }) {
-    expect(this.testLogger.logs.length).toBe(2);
+    //console.log('TEST LOGGER LOGS: ', this.testLogger.logs);
+    // Request + SQL Select + SQL Create + Response
+    expect(this.testLogger.logs.length).toBe(4);
 
     // getting the request log
     const requestLog = this.testLogger.logs[0];
@@ -42,7 +44,7 @@ export class LogTester {
     });
 
     // getting the response log
-    const responseLog = this.testLogger.logs[1];
+    const responseLog = this.testLogger.logs[this.testLogger.logs.length - 1];
     //console.log('RESPONSE LOG: ', responseLog);
     //console.log('RESPONSE LOG DATA: ', responseLog.params[1].responseData);
     expect(responseLog.message).toMatch(
@@ -65,7 +67,10 @@ export class LogTester {
     errorMessage?: string;
     errorType?: string;
   }) {
-    expect(this.testLogger.logs.length).toBe(1);
+    //console.log('TEST LOGGER LOGS: ', this.testLogger.errors);
+    expect(this.testLogger.errors.length).toBe(1);
+
+    // getting the error log
     const log = this.testLogger.errors[0];
     //console.log('LOG: ', log);
     expect(log.message).toMatch(

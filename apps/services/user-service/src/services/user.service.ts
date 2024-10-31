@@ -2,6 +2,7 @@ import { Injectable, ConflictException, NotFoundException } from '@nestjs/common
 import { UserRepository } from '../repositories/user.repository';
 import { NewUser, User, UpdateUser } from '@microservices-app/shared/types';
 import * as bcrypt from 'bcrypt';
+import { SpanType, TraceService } from '@microservices-app/shared/backend';
 
 @Injectable()
 export class UserService {
@@ -17,10 +18,16 @@ export class UserService {
 
     const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
 
-    return this.userRepository.create({
+    // Tracing example -> Database operation
+    TraceService.startSpan(SpanType.DB_TRANSACTION, {
+        operation: 'createUser'
+        });
+    const user = await this.userRepository.create({
       ...data,
       password: hashedPassword,
     });
+    TraceService.endSpan(SpanType.DB_TRANSACTION);
+    return user;
   }
 
   async findUserById(id: string): Promise<User> {

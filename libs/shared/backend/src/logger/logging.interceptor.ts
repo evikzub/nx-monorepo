@@ -18,9 +18,11 @@ import {
   ResponseLogEntry,
   ErrorLogEntry,
   ErrorResponse,
+  LogType,
 } from './logging.config';
 import { IncomingHttpHeaders } from 'http';
 import { CorrelationService } from './correlation.context';
+import { TraceService } from './trace.context';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -54,7 +56,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const logPrefix = `${controllerClass}:${handlerMethod}`;
     
     const requestLog: RequestLogEntry = {
-      type: 'request',
+      type: LogType.REQUEST,
       timestamp: new Date().toISOString(),
       level: LogLevel.INFO,
       requestId,
@@ -73,6 +75,14 @@ export class LoggingInterceptor implements NestInterceptor {
       requestLog
     );
 
+    // Start trace
+    TraceService.startTrace({
+      requestId,
+      className: controllerClass,
+      methodName: handlerMethod,
+      startTime: Date.now()
+    });
+
     return next.handle().pipe(
       tap({
         next: (data: unknown) => {
@@ -82,7 +92,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
           // Log success with structured format
           const responseLog: ResponseLogEntry = {
-            type: 'response',
+            type: LogType.RESPONSE,
             timestamp: new Date().toISOString(),
             level: LogLevel.INFO,
             requestId,
@@ -91,6 +101,18 @@ export class LoggingInterceptor implements NestInterceptor {
             statusCode,
             responseTime,
             responseData: this.sanitizeData(data),
+          };
+
+          // Get trace information
+          const trace = TraceService.getTrace();
+          
+          responseLog.trace = {
+            totalDuration: trace?.startTime ? Date.now() - trace.startTime : 0,
+            spans: trace?.spans.map(span => ({
+              name: span.name,
+              duration: span.endTime ? span.endTime - span.startTime : null,
+              metadata: span.metadata
+            })) || []
           };
 
           this.logger.log(
@@ -105,7 +127,7 @@ export class LoggingInterceptor implements NestInterceptor {
 
           // Log error with structured format
           const errorLog: ErrorLogEntry = {
-            type: 'error',
+            type: LogType.ERROR,
             timestamp: new Date().toISOString(),
             level: LogLevel.ERROR,
             requestId,

@@ -48,7 +48,6 @@ describe('Users E2E', () => {
   });
 
   beforeEach(async () => {
-    testLogger.clear();
     // Clean up database before each test
     try {
       const users = await repository.findAll();
@@ -70,6 +69,7 @@ describe('Users E2E', () => {
       console.error('Error cleaning up database:', error);
       throw error;
     }
+    testLogger.clear();
   });
 
   describe('GET /users', () => {
