@@ -1,25 +1,19 @@
 /// <reference types="jest" />
 
+import { BaseLogEntry } from '../logger/logging.config';
 import { TestLoggerService } from './test-logger.service';
 
-interface LogEntry {
-  method: string;
-  url: string;
-  statusCode: number;
-  requestBody?: Record<string, any>;
-  responseData?: Record<string, any>;
-  error?: {
-    statusCode: number;
-    error: string;
-    message: string;
-  };
-}
+type LogEntry = {
+  message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  params: any[];
+};
 
 export class LogTester {
   constructor(private testLogger: TestLoggerService) {}
 
-  parseLogEntry(logEntry: any): LogEntry {
-    const params = logEntry.params[0];
+  parseLogEntry(logEntry: LogEntry, isError = false): BaseLogEntry {
+    const params = isError ? logEntry.params[2] : logEntry.params[1];
     return typeof params === 'string' ? JSON.parse(params) : params;
   }
 
@@ -27,18 +21,37 @@ export class LogTester {
     method: string;
     url: string;
     statusCode: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     requestBody?: Record<string, any>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     responseData?: Record<string, any>;
   }) {
-    const log = this.testLogger.logs[0];
-    expect(log.message).toMatch(new RegExp(`^.*${options.method}.*${options.url}`));
-    
-    const logEntry = this.parseLogEntry(log);
-    expect(logEntry).toMatchObject({
-      method: options.method,
+    expect(this.testLogger.logs.length).toBe(2);
+
+    // getting the request log
+    const requestLog = this.testLogger.logs[0];
+    expect(requestLog.message).toMatch(
+      new RegExp(`^.*${options.method}.*${options.url}`)
+    );
+    //console.log('REQUEST LOG: ', this.testLogger.logs[0].params);
+    const requestLogEntry = this.parseLogEntry(requestLog);
+    expect(requestLogEntry).toMatchObject({
+      httpMethod: options.method,
       url: options.url,
-      statusCode: options.statusCode,
       ...(options.requestBody && { requestBody: options.requestBody }),
+    });
+
+    // getting the response log
+    const responseLog = this.testLogger.logs[1];
+    //console.log('RESPONSE LOG: ', responseLog);
+    //console.log('RESPONSE LOG DATA: ', responseLog.params[1].responseData);
+    expect(responseLog.message).toMatch(
+      new RegExp(`^.*${options.method}.*${options.url}`)
+    );
+
+    const responseLogEntry = this.parseLogEntry(responseLog);
+    expect(responseLogEntry).toMatchObject({
+      statusCode: options.statusCode,
       ...(options.responseData && { responseData: options.responseData }),
     });
   }
@@ -47,18 +60,24 @@ export class LogTester {
     method: string;
     url: string;
     statusCode: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     requestBody?: Record<string, any>;
     errorMessage?: string;
     errorType?: string;
   }) {
+    expect(this.testLogger.logs.length).toBe(1);
     const log = this.testLogger.errors[0];
-    expect(log.message).toMatch(new RegExp(`^.*${options.method}.*${options.url}`));
-    
-    const logEntry = this.parseLogEntry(log);
+    //console.log('LOG: ', log);
+    expect(log.message).toMatch(
+      new RegExp(`^.*${options.method}.*${options.url}`)
+    );
+
+    const logEntry = this.parseLogEntry(log, true);
+    //console.log('LOG ENTRY: ', logEntry);
     expect(logEntry).toMatchObject({
-      method: options.method,
+      httpMethod: options.method,
       url: options.url,
-      statusCode: options.statusCode,
+      ...(options.statusCode && { error: { statusCode: options.statusCode } }),
       ...(options.requestBody && { requestBody: options.requestBody }),
       ...(options.errorMessage && {
         error: expect.objectContaining({
@@ -68,4 +87,4 @@ export class LogTester {
       }),
     });
   }
-} 
+}

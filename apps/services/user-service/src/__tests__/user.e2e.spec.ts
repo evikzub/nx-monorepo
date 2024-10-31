@@ -152,6 +152,8 @@ describe('Users E2E', () => {
           firstName: 'Test',
           lastName: 'User',
           id: expect.any(String),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
         }),
       });
     });

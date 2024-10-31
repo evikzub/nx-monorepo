@@ -1,30 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '../config/config.service';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
-import { EnvironmentConfig } from '@microservices-app/shared/types';
+import { DefaultLogger } from 'drizzle-orm/logger';
+import { DrizzleLogger } from '../logger/logging.drizzle';
 
 @Injectable()
 export class DatabaseConfig {
-  constructor(private configService: ConfigService<EnvironmentConfig>) {}
+  constructor(private configService: ConfigService) {}
 
   async createConnection(): Promise<NodePgDatabase> {
-    const dbConfig = this.configService.get('database', { infer: true });
+    const config = this.configService.envConfig;
+    const dbConfig = config.database;
     
     const pool = new Pool({
-      connectionString: dbConfig?.url,
-      min: dbConfig?.poolMin,
-      max: dbConfig?.poolMax,
+      connectionString: dbConfig.url,
+      min: dbConfig.poolMin,
+      max: dbConfig.poolMax,
     });
 
     // Set the search_path for the connection
-    await pool.query(`SET search_path TO "${dbConfig?.schemaName}"`);
+    await pool.query(`SET search_path TO "${dbConfig.schemaName}"`);
 
-    const db = drizzle(pool);
+    //const db = drizzle(pool);
+    const db = drizzle(pool, {
+        logger: new DefaultLogger({ writer: new DrizzleLogger() }),
+      });
 
     // Run migrations in development/test environments
-    if (process.env['NODE_ENV'] !== 'production') {
+    if (config.nodeEnv !== 'production') {
       try {
         await migrate(db, { 
           migrationsFolder: 'drizzle',
@@ -42,14 +47,14 @@ export class DatabaseConfig {
 
   // Helper method to ensure schema exists
   async ensureSchema() {
-    const dbConfig = this.configService.get('database', { infer: true });
-    const pool = new Pool({ connectionString: dbConfig?.url });
+    const dbConfig = this.configService.envConfig.database;
+    const pool = new Pool({ connectionString: dbConfig.url });
 
     try {
       await pool.query(`
-        CREATE SCHEMA IF NOT EXISTS "${dbConfig?.schemaName}";
+        CREATE SCHEMA IF NOT EXISTS "${dbConfig.schemaName}";
       `);
-      console.log(`✅ Schema "${dbConfig?.schemaName}" ensured`);
+      console.log(`✅ Schema "${dbConfig.schemaName}" ensured`);
     } catch (error) {
       console.error('❌ Error ensuring schema:', error);
       throw error;
