@@ -1,10 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
+import {
+  DatabaseModule,
+  loadConfiguration,
+} from '@microservices-app/shared/backend';
 import { UserRepository } from '../user.repository';
-import { NewUser } from '@microservices-app/shared/types';
+import { NewUser, NotFoundError } from '@microservices-app/shared/types';
 
 describe('UserRepository', () => {
+  const email = 'test.repository@example.com';
+
   let repository: UserRepository;
   let moduleRef: TestingModule;
 
@@ -28,9 +33,16 @@ describe('UserRepository', () => {
   beforeEach(async () => {
     // Clean up database before each test
     try {
-      const users = await repository.findAll();
-      if (users.length > 0) {
-        await Promise.all(users.map(user => repository.hardDelete(user.id)));
+      const user = await repository.findByEmail(email, true);
+      if (user) {
+        try {
+          await repository.hardDelete(user.id);
+        } catch (error) {
+          // Ignore NotFoundError during cleanup
+          if (!(error instanceof NotFoundError)) {
+            throw error;
+          }
+        }
       }
     } catch (error) {
       console.error('Error cleaning up database:', error);
@@ -40,7 +52,7 @@ describe('UserRepository', () => {
 
   it('should create a user', async () => {
     const newUser: NewUser = {
-      email: 'test@example.com',
+      email,
       password: 'password123',
       firstName: 'Test',
       lastName: 'User',

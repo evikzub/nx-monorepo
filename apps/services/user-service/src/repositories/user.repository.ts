@@ -32,13 +32,13 @@ export class UserRepository implements OnModuleInit {
     return results[0] || null;
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail(email: string, includeDeleted = false): Promise<User | null> {
     const results = await this.db
       .select()
       .from(users)
       .where(and(
         eq(users.email, email),
-        isNull(users.deletedAt)
+        !includeDeleted ? isNull(users.deletedAt) : undefined
       ))
       .limit(1);
     

@@ -12,6 +12,9 @@ import {
 import { ConflictException, NotFoundException } from '@nestjs/common';
 
 describe('UserController Integration Tests', () => {
+  const email = 'test.controller@example.com';
+  const duplicateEmail = 'duplicate.controller@example.com';
+    
   let controller: UserController;
   //let service: UserService;
   let repository: UserRepository;
@@ -41,12 +44,17 @@ describe('UserController Integration Tests', () => {
     await moduleRef.close();
   });
 
+  async function deleteUser(email: string) {
+    const user = await repository.findByEmail(email, true);
+    if (user) {
+      await repository.hardDelete(user.id);
+    }
+  }
+
   beforeEach(async () => {
     try {
-      const users = await repository.findAll();
-      if (users.length > 0) {
-        await Promise.all(users.map(user => repository.hardDelete(user.id)));
-      }
+      await deleteUser(email);
+      await deleteUser(duplicateEmail);
     } catch (error) {
       console.error('Error cleaning up database:', error);
       throw error;
@@ -60,7 +68,7 @@ describe('UserController Integration Tests', () => {
   describe('createUser', () => {
     it('should create a new user', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'test@example.com',
+        email,
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -80,7 +88,7 @@ describe('UserController Integration Tests', () => {
 
     it('should throw ConflictException for duplicate email', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'duplicate@example.com',
+        email: duplicateEmail,
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -99,7 +107,7 @@ describe('UserController Integration Tests', () => {
   describe('findUser', () => {
     it('should find a user by id', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'find@example.com',
+        email, //'find@example.com',
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -127,7 +135,7 @@ describe('UserController Integration Tests', () => {
   describe('updateUser', () => {
     it('should update user details', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'update@example.com',
+        email, //'update@example.com',
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',

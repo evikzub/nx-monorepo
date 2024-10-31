@@ -17,6 +17,9 @@ import {
 import { LogTester } from '@microservices-app/shared/backend';
 
 describe('Users E2E', () => {
+  const email = 'test.e2e@example.com';
+  const duplicateEmail = 'duplicate.e2e@example.com';
+
   let app: INestApplication;
   let repository: UserRepository;
   let testLogger: TestLoggerService;
@@ -47,24 +50,18 @@ describe('Users E2E', () => {
     repository = moduleRef.get<UserRepository>(UserRepository);
   });
 
+  async function deleteUser(email: string) {
+    const user = await repository.findByEmail(email, true);
+    if (user) {
+      await repository.hardDelete(user.id);
+    }
+  }
+
   beforeEach(async () => {
     // Clean up database before each test
     try {
-      const users = await repository.findAll();
-      if (users.length > 0) {
-        await Promise.all(
-          users.map(async (user) => {
-            try {
-              await repository.hardDelete(user.id);
-            } catch (error) {
-              // Ignore NotFoundError during cleanup
-              if (!(error instanceof NotFoundError)) {
-                throw error;
-              }
-            }
-          })
-        );
-      }
+      await deleteUser(email);
+      await deleteUser(duplicateEmail);
     } catch (error) {
       console.error('Error cleaning up database:', error);
       throw error;
@@ -74,13 +71,14 @@ describe('Users E2E', () => {
 
   describe('GET /users', () => {
     it('should return empty array when no users exist', () => {
+      // Will not work for parallel testing
       return request(app.getHttpServer()).get('/users').expect(200).expect([]);
     });
 
     it('should return array of users', async () => {
       // Create a test user first
       const createUserDto: CreateUserDto = {
-        email: 'test@example.com',
+        email,
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -96,8 +94,10 @@ describe('Users E2E', () => {
         .expect(200);
 
       expect(response.body).toBeInstanceOf(Array);
-      expect(response.body[0]).toHaveProperty('email', createUserDto.email);
-      expect(response.body[0]).not.toHaveProperty('password');
+      if (response.body.length === 1) {
+        expect(response.body[0]).toHaveProperty('email', createUserDto.email);
+      }
+     expect(response.body[0]).not.toHaveProperty('password');
     });
 
     it('should return user not found', async () => {
@@ -121,7 +121,7 @@ describe('Users E2E', () => {
   describe('POST /users', () => {
     it('should create a new user and log the operation', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'test@example.com',
+        email,
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -142,13 +142,13 @@ describe('Users E2E', () => {
         url: '/users',
         statusCode: 201,
         requestBody: {
-          email: 'test@example.com',
+          email,
           firstName: 'Test',
           lastName: 'User',
           password: '***',
         },
         responseData: expect.objectContaining({
-          email: 'test@example.com',
+          email,
           firstName: 'Test',
           lastName: 'User',
           id: expect.any(String),
@@ -160,7 +160,7 @@ describe('Users E2E', () => {
 
     it('should return 409 for duplicate email', async () => {
       const createUserDto: CreateUserDto = {
-        email: 'duplicate@example.com',
+        email: duplicateEmail,
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
@@ -185,7 +185,7 @@ describe('Users E2E', () => {
         errorMessage: 'User with this email already exists',
         errorType: 'ConflictException',
         requestBody: {
-          email: 'duplicate@example.com',
+          email: duplicateEmail,
           firstName: 'Test',
           lastName: 'User',
           password: '***',
