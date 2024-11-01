@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
 import chalk from 'chalk';
 //import { LogEntry } from './loging.config';
@@ -25,9 +26,16 @@ export class LoggerService implements NestLoggerService {
     console.warn(this.formatMessage('WARN', message, context, data, chalk.yellow));
   }
 
-  debug(message: string, context?: string, data?: unknown) {
+  debug(message: any, ...optionalParams: [...any, string?]){
+    console.debug(optionalParams);
+    const data = optionalParams[0];
+    const context = optionalParams.length > 1 ? optionalParams[1] : undefined ;
     console.debug(this.formatMessage('DEBUG', message, context, data, chalk.green));
   }
+
+  // debug(message: string, context?: string, data?: unknown) {
+  //   console.debug(this.formatMessage('DEBUG', message, context, data, chalk.green));
+  // }
 
   verbose(message: string, context?: string, data?: unknown) {
     console.log(this.formatMessage('VERBOSE', message, context, data, chalk.cyan));

@@ -7,7 +7,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { UserModule } from './user.module';
 import { LoggingInterceptor } from '@microservices-app/shared/backend';
-import { LoggerService, ConfigService } from '@microservices-app/shared/backend';
+import { LoggerService, AppConfigService } from '@microservices-app/shared/backend';
 
 async function bootstrap() {
   const app = await NestFactory.create(UserModule, {
@@ -15,7 +15,7 @@ async function bootstrap() {
   });
   
   // Use the ConfigService to create the interceptor instance
-  const configService = app.get(ConfigService);
+  const configService = app.get(AppConfigService);
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

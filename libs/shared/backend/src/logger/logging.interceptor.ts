@@ -6,7 +6,7 @@ import {
   Logger,
   HttpException,
 } from '@nestjs/common';
-import { ConfigService } from '../config/config.service';
+import { AppConfigService } from '../config/config.service';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
@@ -29,10 +29,11 @@ export class LoggingInterceptor implements NestInterceptor {
   private readonly logger = new Logger('HTTP');
   private readonly isDevelopment: boolean;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: AppConfigService) {
     this.isDevelopment = this.configService.envConfig.nodeEnv === 'development';
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest<Request>();
@@ -159,6 +160,7 @@ export class LoggingInterceptor implements NestInterceptor {
         statusCode: error.getStatus(),
         error: error.name,
         message: typeof response === 'object' 
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ? (response as any).message || error.message
           : response,
         details: typeof response === 'object' ? response : undefined,

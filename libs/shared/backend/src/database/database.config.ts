@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '../config/config.service';
+import { AppConfigService } from '../config/config.service';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
@@ -8,7 +8,7 @@ import { DrizzleLogger } from '../logger/logging.drizzle';
 
 @Injectable()
 export class DatabaseConfig {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: AppConfigService) {}
 
   async createConnection(): Promise<NodePgDatabase> {
     const config = this.configService.envConfig;

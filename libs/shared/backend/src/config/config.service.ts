@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService as NestConfigService } from '@nestjs/config';
 
 @Injectable()
-export class ConfigService {
+export class AppConfigService {
   private readonly config: EnvironmentConfig;
 
   constructor(private readonly nestConfigService: NestConfigService) {
@@ -18,12 +18,20 @@ export class ConfigService {
         poolMin: nestConfigService.get<string>(ENV_KEYS.DATABASE_POOL_MIN),
         poolMax: nestConfigService.get<string>(ENV_KEYS.DATABASE_POOL_MAX),
       },
+      consul: {
+        host: nestConfigService.get<string>(ENV_KEYS.CONSUL_HOST),
+        port: nestConfigService.get<string>(ENV_KEYS.CONSUL_PORT),
+      },
       apiGateway: {
+        id: nestConfigService.get<string>(ENV_KEYS.API_GATEWAY_ID),
+        name: nestConfigService.get<string>(ENV_KEYS.API_GATEWAY_NAME),
         port: nestConfigService.get<string>(ENV_KEYS.API_GATEWAY_PORT),
         host: nestConfigService.get<string>(ENV_KEYS.API_GATEWAY_HOST),
         timeout: nestConfigService.get<string>(ENV_KEYS.SERVICE_TIMEOUT),
       },
       userService: {
+        id: nestConfigService.get<string>(ENV_KEYS.USER_SERVICE_ID),
+        name: nestConfigService.get<string>(ENV_KEYS.USER_SERVICE_NAME),
         port: nestConfigService.get<string>(ENV_KEYS.USER_SERVICE_PORT),
         host: nestConfigService.get<string>(ENV_KEYS.USER_SERVICE_HOST),
         timeout: nestConfigService.get<string>(ENV_KEYS.SERVICE_TIMEOUT),

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 
 const serviceConfigSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
   port: z.coerce.number().positive(),
   host: z.string().min(1),
   timeout: z.coerce.number().positive(),
@@ -13,9 +15,15 @@ const databaseConfigSchema = z.object({
   poolMax: z.coerce.number().positive(),
 });
 
+const consulConfigSchema = z.object({
+  host: z.string().min(1),
+  port: z.coerce.number().positive(),
+});
+
 export const environmentSchema = z.object({
   nodeEnv: z.enum(['development', 'test', 'production']).default('development'),
   database: databaseConfigSchema,
+  consul: consulConfigSchema,
   apiGateway: serviceConfigSchema,
   userService: serviceConfigSchema,
 });
