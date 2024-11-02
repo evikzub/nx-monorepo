@@ -1,70 +1,104 @@
-import { Injectable, HttpException, Logger, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, HttpException, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
 import { CircuitBreakerService } from './circuit-breaker.service';
 import { RetryService } from './retry.service';
+import { LoadBalancerService } from './load-balancer.service';
 import { DiscoveryService } from '../discovery/discovery.service';
 import { ServiceInstance } from '../discovery/types';
+import { IProxyService, ProxyRequest } from '../interfaces/proxy.interface';
+import { ExtendedAxiosRequestConfig, ExtendedInternalAxiosRequestConfig } from '../interfaces/axios.interface';
 
 @Injectable()
-export class ProxyService {
+export class ProxyService implements IProxyService {
   private readonly logger = new Logger(ProxyService.name);
 
   constructor(
     private readonly httpService: HttpService,
+    private readonly discoveryService: DiscoveryService,
     private readonly circuitBreaker: CircuitBreakerService,
     private readonly retryService: RetryService,
-    private readonly discoveryService: DiscoveryService
+    private readonly loadBalancer: LoadBalancerService,
   ) {}
 
-  async forward(serviceName: string, path: string, request: any) {
-    const instances = await this.discoveryService.getServiceInstances(serviceName);
+  async forward(serviceName: string, path: string, request: ProxyRequest) {
+    this.logger.debug(`Forwarding request to ${serviceName}`, {
+        path,
+        method: request.method,
+        headers: request.headers
+      });
     
-    if (instances.length === 0) {
-      throw new ServiceUnavailableException(
-        `No available instances for service: ${serviceName}`
+    // Check circuit breaker first
+    if (this.circuitBreaker.isOpen(serviceName)) {
+      throw new HttpException(
+        `Service ${serviceName} is currently unavailable`,
+        503
       );
     }
-
-    // For now, just use the first healthy instance
-    const instance = instances.find(i => i.status === 'healthy');
-    if (!instance) {
-      throw new ServiceUnavailableException(
-        `No healthy instances for service: ${serviceName}`
-      );
-    }
-
-    this.logger.debug(`Forwarding request to ${instance.host}:${instance.port}${path}`);
 
     try {
-      const response = await this.retryService.executeWithRetry(
-        () => this.makeRequest(instance, path, request),
-        serviceName
+      // Get service instances
+      const instances = await this.discoveryService.getServiceInstances(serviceName);
+      
+      // Use retry service with load balancer
+      return await this.retryService.executeWithRetry(
+        async () => {
+          const instance = this.loadBalancer.selectInstance(instances);
+          const response = await this.makeRequest(instance, path, request);
+          
+          // Record success
+          this.circuitBreaker.recordSuccess(serviceName);
+          this.loadBalancer.recordSuccess(instance);
+          
+          return response;
+        },
+        serviceName,
+        {
+          maxAttempts: 3,
+          backoffMs: 1000,
+        }
       );
-
-      this.circuitBreaker.recordSuccess(serviceName);
-      return response;
     } catch (error) {
+      // Record failure
       this.circuitBreaker.recordFailure(serviceName);
-      throw this.handleProxyError(error as AxiosError, instance);
+      
+      if (error instanceof AxiosError && error.response) {
+        const instance = error.config?.['metadata']?.instance as ServiceInstance;
+        if (instance) {
+          this.loadBalancer.recordFailure(instance);
+        }
+      }
+
+      throw this.handleProxyError(error);
     }
   }
 
-  private async makeRequest(instance: ServiceInstance, path: string, request: any) {
-    const url = `http://${instance.host}:${instance.port}${path}`;
+  private async makeRequest(
+    instance: ServiceInstance, 
+    path: string, 
+    request: ProxyRequest
+  ) {
+    const baseUrl = `http://${instance.host}:${instance.port}`;
+    const url = new URL(path, baseUrl).toString();
     
-    this.logger.debug(`Making request to: ${url}`);
-    
+    this.logger.debug(`Proxying request to: ${url}`, {
+      method: request.method,
+      headers: request.headers,
+    });
+
+    const config: ExtendedAxiosRequestConfig = {
+      method: request.method,
+      url,
+      data: request.body,
+      headers: this.filterHeaders(request.headers),
+      params: request.query,
+      timeout: 5000,
+      metadata: { instance },
+    };
+
     const response = await firstValueFrom(
-      this.httpService.request({
-        method: request.method,
-        url,
-        data: request.body,
-        headers: this.filterHeaders(request.headers),
-        params: request.query,
-        timeout: 5000 // 5 second timeout
-      })
+      this.httpService.request(config)
     );
 
     return response.data;
@@ -75,7 +109,7 @@ export class ProxyService {
       'authorization',
       'content-type',
       'user-agent',
-      'x-correlation-id'
+      'x-correlation-id',
     ];
     
     return Object.keys(headers)
@@ -86,31 +120,23 @@ export class ProxyService {
       }, {} as Record<string, string>);
   }
 
-  private handleProxyError(error: AxiosError, instance: ServiceInstance) {
-    const status = error.response?.status || 500;
-    const message = error.response?.data || error.message;
+  private handleProxyError(error: any) {
+    if (error instanceof AxiosError) {
+      const status = error.response?.status || 500;
+      const message = error.response?.data?.message || error.message;
+      const config = error.config as ExtendedInternalAxiosRequestConfig;
 
-    // Log detailed error information
-    this.logger.error({
-      message: 'Proxy request failed',
-      status,
-      error: message,
-      url: error.config?.url,
-      method: error.config?.method,
-      service: {
-        name: instance.name,
-        id: instance.id,
-        host: instance.host,
-        port: instance.port
-      }
-    });
+      this.logger.error(`Proxy request failed: ${message}`, {
+        status,
+        error: error.message,
+        url: config?.url,
+        method: config?.method,
+        instance: config?.metadata?.instance,
+      });
 
-    if (error.code === 'ECONNREFUSED') {
-      return new ServiceUnavailableException(
-        `Service ${instance.name} is not available at ${instance.host}:${instance.port}`
-      );
+      return new HttpException(message, status);
     }
 
-    return new HttpException(message, status);
+    return error;
   }
 } 

@@ -7,6 +7,7 @@
     "db:migrate": "tsx libs/shared/backend/src/database/migrate.ts",
     "db:push": "drizzle-kit push:pg",
     "db:studio": "drizzle-kit studio",
+    "test:integration": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles",
     "test:cov": "jest --coverage",
     "test:cov:watch": "jest --coverage --watch"
   },
@@ -62,6 +63,7 @@
     "eslint-config-prettier": "^9.0.0",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
+    "nock": "^13.5.5",
     "nx": "20.0.6",
     "prettier": "^2.6.2",
     "rollup": "^4.14.0",
