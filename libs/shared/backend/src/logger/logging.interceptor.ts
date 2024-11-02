@@ -72,8 +72,8 @@ export class LoggingInterceptor implements NestInterceptor {
 
     this.logger.log(
       this.formatLogMessage(method, originalUrl, ip), 
-      logPrefix,
-      requestLog
+      requestLog,
+      logPrefix
     );
 
     // Start trace
@@ -118,8 +118,8 @@ export class LoggingInterceptor implements NestInterceptor {
 
           this.logger.log(
             this.formatLogMessage(method, originalUrl, ip, statusCode, responseTime),
-            logPrefix,
-            responseLog
+            responseLog,
+            logPrefix
           );
         },
         error: (error: Error) => {

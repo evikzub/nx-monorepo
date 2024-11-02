@@ -13,7 +13,9 @@ export class LogTester {
   constructor(private testLogger: TestLoggerService) {}
 
   parseLogEntry(logEntry: LogEntry, isError = false): BaseLogEntry {
-    const params = isError ? logEntry.params[2] : logEntry.params[1];
+    const params = isError ? logEntry.params[2] : logEntry.params[0];
+    //console.log(logEntry.params);
+    //const params = logEntry.params[0];
     return typeof params === 'string' ? JSON.parse(params) : params;
   }
 

@@ -15,3 +15,5 @@ export * from './testing/test-logger.service';
 // Trace
 export * from './logger/trace.context';
 export * from './logger/trace.types';
+// Correlation
+export * from './logger/correlation.context';

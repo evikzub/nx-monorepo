@@ -22,11 +22,11 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LoggingInterceptor(configService));
   
-  const port = configService.envConfig.userService.port || 3000;
-  await app.listen(port);
+  const serviceConfig = configService.envConfig.userService;
+  await app.listen(serviceConfig.port, serviceConfig.host);
   
   Logger.log(
-    `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
+    `🚀 User-Service is running on: http://${serviceConfig.host}:${serviceConfig.port}/${globalPrefix}`
   );
 }
 

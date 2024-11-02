@@ -19,14 +19,14 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
 
     // Tracing example -> Database operation
-    TraceService.startSpan(SpanType.DB_TRANSACTION, {
+    const span = TraceService.startSpan(SpanType.DB_TRANSACTION, {
         operation: 'createUser'
         });
     const user = await this.userRepository.create({
       ...data,
       password: hashedPassword,
     });
-    TraceService.endSpan(SpanType.DB_TRANSACTION);
+    TraceService.endSpan(span);
     return user;
   }
 

@@ -1,7 +1,7 @@
 import { Controller, All, Req, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { ProxyService } from './proxy.service';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { AppConfigService, TraceService } from '@microservices-app/shared/backend';
 
 @Controller()
 export class ProxyController {
@@ -19,17 +19,30 @@ export class ProxyController {
     
     this.logger.debug(`Proxying request to ${serviceConfig.name}: ${request.url}`);
 
-    return this.proxyService.forward(
-      serviceConfig.name,
-      request.url,
-      {
-        method: request.method,
-        url: request.url,
-        headers: request.headers as Record<string, string>,
-        body: request.body,
-        query: request.query as Record<string, string>,
-      }
-    );
+    // Add trace span for the proxy operation
+    const span = TraceService.startSpan('proxy_request', {
+        serviceName: serviceConfig.name,
+        targetUrl: request.url
+        });
+
+    try {
+        const result = await this.proxyService.forward(
+            serviceConfig.name,
+            request.url,
+            {
+              method: request.method,
+              url: request.url,
+              headers: request.headers as Record<string, string>,
+              body: request.body,
+              query: request.query as Record<string, string>,
+            }
+        );
+
+        TraceService.endSpan(span);
+        return result;
+    } catch (error) {
+        TraceService.endSpan(span, error);
+        throw error;
+    }
   }
 } 
-  

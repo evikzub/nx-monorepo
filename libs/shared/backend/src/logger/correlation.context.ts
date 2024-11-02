@@ -4,13 +4,22 @@ interface CorrelationContext {
   requestId: string;
   className?: string;
   methodName?: string;
+  sourceService?: string;
+  sourceChain?: string[];
 }
 
 export class CorrelationService {
   private static storage = new AsyncLocalStorage<CorrelationContext>();
 
   static setContext(context: CorrelationContext) {
-    this.storage.enterWith(context);
+    const sourceChain = context.sourceService 
+      ? [...(context.sourceChain || []), context.sourceService]
+      : [];
+
+    this.storage.enterWith({
+      ...context,
+      sourceChain
+    });
   }
 
   static getContext(): CorrelationContext | undefined {
@@ -19,5 +28,9 @@ export class CorrelationService {
 
   static getRequestId(): string | undefined {
     return this.storage.getStore()?.requestId;
+  }
+
+  static getRequestChain(): string[] {
+    return this.storage.getStore()?.sourceChain || [];
   }
 } 

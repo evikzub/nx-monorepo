@@ -13,7 +13,7 @@ describe('Proxy Integration Tests', () => {
   let app: INestApplication;
   let config: AppConfigService;
   let userServiceMock: ReturnType<typeof mockUserService>;
-  const logger = console; // new Logger('ProxyIntegrationTest');
+  const logger = new Logger('ProxyIntegrationTest');
 
   beforeAll(async () => {
     try {

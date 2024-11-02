@@ -8,7 +8,12 @@ import { LoadBalancerService } from './load-balancer.service';
 import { DiscoveryService } from '../discovery/discovery.service';
 import { ServiceInstance } from '../discovery/types';
 import { IProxyService, ProxyRequest } from '../interfaces/proxy.interface';
-import { ExtendedAxiosRequestConfig, ExtendedInternalAxiosRequestConfig } from '../interfaces/axios.interface';
+import {
+  ExtendedAxiosRequestConfig,
+  ExtendedInternalAxiosRequestConfig,
+} from '../interfaces/axios.interface';
+import { TraceService } from '@microservices-app/shared/backend';
+import { CorrelationService } from '@microservices-app/shared/backend';
 
 @Injectable()
 export class ProxyService implements IProxyService {
@@ -19,16 +24,16 @@ export class ProxyService implements IProxyService {
     private readonly discoveryService: DiscoveryService,
     private readonly circuitBreaker: CircuitBreakerService,
     private readonly retryService: RetryService,
-    private readonly loadBalancer: LoadBalancerService,
+    private readonly loadBalancer: LoadBalancerService
   ) {}
 
   async forward(serviceName: string, path: string, request: ProxyRequest) {
     this.logger.debug(`Forwarding request to ${serviceName}`, {
-        path,
-        method: request.method,
-        headers: request.headers
-      });
-    
+      path,
+      method: request.method,
+      headers: request.headers,
+    });
+
     // Check circuit breaker first
     if (this.circuitBreaker.isOpen(serviceName)) {
       throw new HttpException(
@@ -37,20 +42,43 @@ export class ProxyService implements IProxyService {
       );
     }
 
+    // Get correlation context
+    const correlationId = CorrelationService.getRequestId();
+    const context = CorrelationService.getContext();
+
+    // Add correlation headers
+    request.headers = {
+    //const headers = {
+      ...request.headers,
+      'X-Correlation-ID': correlationId,
+      'X-Request-ID': correlationId,
+      'X-Source-Service': 'api-gateway',
+      'X-Source-Class': context?.className,
+      'X-Source-Method': context?.methodName
+    };
+
+    const span = TraceService.startSpan('http_forward', {
+      service: serviceName,
+      path,
+      method: request.method,
+    });
+
     try {
       // Get service instances
-      const instances = await this.discoveryService.getServiceInstances(serviceName);
-      
+      const instances = await this.discoveryService.getServiceInstances(
+        serviceName
+      );
+
       // Use retry service with load balancer
-      return await this.retryService.executeWithRetry(
+      const result = await this.retryService.executeWithRetry(
         async () => {
           const instance = this.loadBalancer.selectInstance(instances);
           const response = await this.makeRequest(instance, path, request);
-          
+
           // Record success
           this.circuitBreaker.recordSuccess(serviceName);
           this.loadBalancer.recordSuccess(instance);
-          
+
           return response;
         },
         serviceName,
@@ -59,29 +87,41 @@ export class ProxyService implements IProxyService {
           backoffMs: 1000,
         }
       );
+
+      TraceService.endSpan(span, {
+        statusCode: result.status,
+        responseSize: JSON.stringify(result.data),
+      });
+
+      return result;
     } catch (error) {
       // Record failure
       this.circuitBreaker.recordFailure(serviceName);
-      
+
       if (error instanceof AxiosError && error.response) {
-        const instance = error.config?.['metadata']?.instance as ServiceInstance;
+        const instance = error.config?.['metadata']
+          ?.instance as ServiceInstance;
         if (instance) {
           this.loadBalancer.recordFailure(instance);
         }
       }
 
+      TraceService.endSpan(span, {
+        error: error.message,
+        errorCode: error.response?.status,
+      });
       throw this.handleProxyError(error);
     }
   }
 
   private async makeRequest(
-    instance: ServiceInstance, 
-    path: string, 
+    instance: ServiceInstance,
+    path: string,
     request: ProxyRequest
   ) {
     const baseUrl = `http://${instance.host}:${instance.port}`;
     const url = new URL(path, baseUrl).toString();
-    
+
     this.logger.debug(`Proxying request to: ${url}`, {
       method: request.method,
       headers: request.headers,
@@ -97,9 +137,7 @@ export class ProxyService implements IProxyService {
       metadata: { instance },
     };
 
-    const response = await firstValueFrom(
-      this.httpService.request(config)
-    );
+    const response = await firstValueFrom(this.httpService.request(config));
 
     return response.data;
   }
@@ -111,9 +149,9 @@ export class ProxyService implements IProxyService {
       'user-agent',
       'x-correlation-id',
     ];
-    
+
     return Object.keys(headers)
-      .filter(key => allowedHeaders.includes(key.toLowerCase()))
+      .filter((key) => allowedHeaders.includes(key.toLowerCase()))
       .reduce((obj, key) => {
         obj[key] = headers[key];
         return obj;
@@ -139,4 +177,4 @@ export class ProxyService implements IProxyService {
 
     return error;
   }
-} 
+}

@@ -33,7 +33,7 @@ export class DrizzleLogger implements LogWriter {
     const spanName = 'database_query';
     const parsedQuery = this.parseQueryFromMessage(message);
     
-    TraceService.startSpan(spanName, {
+    const span = TraceService.startSpan(spanName, {
       query: this.sanitizeQuery(parsedQuery)
     });
 
@@ -54,10 +54,10 @@ export class DrizzleLogger implements LogWriter {
     if (message.includes('Error')) {
       this.logger.error("SQL ERROR: ", undefined, ctxMessage, logEntry);
     } else {
-      this.logger.log("SQL LOG: ", ctxMessage, logEntry);
+      this.logger.log("SQL LOG: ", logEntry, ctxMessage);
     }
 
-    TraceService.endSpan(spanName);
+    TraceService.endSpan(span);
   }
 
   private parseQueryFromMessage(message: string) {

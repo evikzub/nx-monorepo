@@ -5,10 +5,22 @@ import chalk from 'chalk';
 
 @Injectable()
 export class LoggerService implements NestLoggerService {
-  log(message: string, context?: string, data?: unknown) {
-    //console.log('LOG: MESSAGE: ', message);
-    //console.log('LOG: CONTEXT: ', context);
-    //console.log('LOG: DATA: ', data);
+  private getParams(optionalParams: [...any, string?]) {
+    let context: string | undefined;
+    let data: unknown | undefined;
+  
+    if (optionalParams.length === 1) {
+      context = optionalParams[0];
+    } else {
+      data = optionalParams[0];
+      context = optionalParams[1] ;
+    }
+    return { context, data };
+  }
+
+  log(message: string, ...optionalParams: [...any, string?]) {
+    //console.log(optionalParams);
+    const { context, data } = this.getParams(optionalParams);
     console.log(this.formatMessage('LOG', message, context, data, chalk.blue));
     //console.log('LOG', message, context);
   }
@@ -22,14 +34,14 @@ export class LoggerService implements NestLoggerService {
     }
   }
 
-  warn(message: string, context?: string, data?: unknown) {
+  warn(message: string, ...optionalParams: [...any, string?]) {
+    const { context, data } = this.getParams(optionalParams);
     console.warn(this.formatMessage('WARN', message, context, data, chalk.yellow));
   }
 
   debug(message: any, ...optionalParams: [...any, string?]){
-    console.debug(optionalParams);
-    const data = optionalParams[0];
-    const context = optionalParams.length > 1 ? optionalParams[1] : undefined ;
+    //console.debug(optionalParams);
+    const { context, data } = this.getParams(optionalParams);
     console.debug(this.formatMessage('DEBUG', message, context, data, chalk.green));
   }
 
@@ -37,7 +49,8 @@ export class LoggerService implements NestLoggerService {
   //   console.debug(this.formatMessage('DEBUG', message, context, data, chalk.green));
   // }
 
-  verbose(message: string, context?: string, data?: unknown) {
+  verbose(message: string, ...optionalParams: [...any, string?]) {
+    const { context, data } = this.getParams(optionalParams);
     console.log(this.formatMessage('VERBOSE', message, context, data, chalk.cyan));
   }
 
