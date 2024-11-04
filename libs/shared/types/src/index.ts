@@ -13,4 +13,5 @@ export * from './database/repository.types';
 export * from './errors/application-errors';
 
 // DTOs
-export * from './validators/user.schema';
+//export * from './validators/user.schema';
+export * from './validators/auth.schema';

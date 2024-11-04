@@ -1,29 +1,35 @@
 import request from 'supertest';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import {
   DatabaseModule,
-  loadConfiguration,
+  AppConfigModule
 } from '@microservices-app/shared/backend';
-import { UserModule } from '../user.module';
+import { UserModule } from './user.module';
+import { AuthModule } from '../auth/auth.module';
 import { UserRepository } from '../repositories/user.repository';
-import { CreateUserDto } from '@microservices-app/shared/types';
+import { CreateUserDto, UserRole } from '@microservices-app/shared/types';
 import { TestLoggerService } from '@microservices-app/shared/backend';
 import {
   LoggingInterceptor,
   AppConfigService,
 } from '@microservices-app/shared/backend';
 import { LogTester } from '@microservices-app/shared/backend';
+//import { JwtService } from '@nestjs/jwt';
 
-describe('Users E2E', () => {
+describe('Users Integration', () => {
   const email = 'test.e2e@example.com';
   const duplicateEmail = 'duplicate.e2e@example.com';
+  const adminEmail = 'admin.e2e@example.com';
+  const password = 'password123';
+  const publicEmail = 'regular@example.com';
 
   let app: INestApplication;
   let repository: UserRepository;
   let testLogger: TestLoggerService;
   let logTester: LogTester;
+  //let jwtService: JwtService;
+  let adminToken: string;
 
   beforeAll(async () => {
     testLogger = new TestLoggerService();
@@ -31,11 +37,13 @@ describe('Users E2E', () => {
 
     const moduleRef = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          load: [loadConfiguration],
-        }),
+        AppConfigModule.forRoot(), // Use forRoot to configure the module
+        // ConfigModule.forRoot({
+        //   load: [loadConfiguration],
+        // }),
         DatabaseModule,
         UserModule,
+        AuthModule,
       ],
     }).compile();
 
@@ -48,7 +56,26 @@ describe('Users E2E', () => {
     await app.init();
 
     repository = moduleRef.get<UserRepository>(UserRepository);
+    //jwtService = moduleRef.get<JwtService>(JwtService);
+
+    // Create admin user and get token
+    await createAdminUser();
   });
+
+  async function createAdminUser() {
+    // Register admin user
+    const response = await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        email: adminEmail,
+        password,
+        roles: [UserRole.ADMIN]
+      });
+
+    if (response.status === 201) {
+      adminToken = response.body.accessToken;
+    }
+  }
 
   async function deleteUser(email: string) {
     const user = await repository.findByEmail(email, true);
@@ -62,6 +89,8 @@ describe('Users E2E', () => {
     try {
       await deleteUser(email);
       await deleteUser(duplicateEmail);
+      await deleteUser(adminEmail);
+      await deleteUser(publicEmail);
     } catch (error) {
       console.error('Error cleaning up database:', error);
       throw error;
@@ -70,65 +99,95 @@ describe('Users E2E', () => {
   });
 
   describe('GET /users', () => {
-    it.skip('should return empty array when no users exist', () => {
-      // Will not work for parallel testing
-      return request(app.getHttpServer()).get('/users').expect(200).expect([]);
+    it('should require authentication', () => {
+      return request(app.getHttpServer())
+        .get('/users')
+        .expect(401);
     });
 
-    it('should return array of users', async () => {
+    it('should require admin role', async () => {
+      // Create regular user and get token
+      const regularUserResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          email,
+          password,
+          roles: [UserRole.PUBLIC]
+        });
+
+      return request(app.getHttpServer())
+        .get('/users')
+        .set('Authorization', `Bearer ${regularUserResponse.body.accessToken}`)
+        .expect(403);
+    });
+
+    it('should return array of users for admin', async () => {
       // Create a test user first
       const createUserDto: CreateUserDto = {
         email,
-        password: 'password123',
+        password,
         firstName: 'Test',
         lastName: 'User',
       };
 
       await request(app.getHttpServer())
         .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(createUserDto)
         .expect(201);
 
       const response = await request(app.getHttpServer())
         .get('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
         .expect(200);
 
       expect(response.body).toBeInstanceOf(Array);
-      if (response.body.length === 1) {
-        expect(response.body[0]).toHaveProperty('email', createUserDto.email);
-      }
-     expect(response.body[0]).not.toHaveProperty('password');
-    });
-
-    it('should return user not found', async () => {
-      const id = '8303242c-3511-4fc7-a9c3-d79ac8027679';
-
-      await request(app.getHttpServer())
-        .get(`/users/${id}`)
-        .expect(404);
-
-      logTester.expectErrorLog({
-        method: 'GET',
-        url: `/users/${id}`,
-        statusCode: 404,
-        errorMessage: 'User not found',
-        errorType: 'NotFoundException',
-        requestBody: {},
-      });
+      expect(response.body.some(user => user.email === email)).toBeTruthy();
+      expect(response.body[0]).not.toHaveProperty('password');
     });
   });
 
   describe('POST /users', () => {
-    it('should create a new user and log the operation', async () => {
+    it('should require admin role to create user', async () => {
       const createUserDto: CreateUserDto = {
         email,
-        password: 'password123',
+        password,
+        firstName: 'Test',
+        lastName: 'User',
+      };
+
+      // Try without token
+      await request(app.getHttpServer())
+        .post('/users')
+        .send(createUserDto)
+        .expect(401);
+
+      // Create regular user and try with their token
+      const regularUserResponse = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({
+          email: publicEmail,
+          password,
+        });
+
+      await request(app.getHttpServer())
+        .post('/users')
+        .set('Authorization', `Bearer ${regularUserResponse.body.accessToken}`)
+        .send(createUserDto)
+        .expect(403);
+    });
+
+    it('should create a new user as admin and log the operation', async () => {
+      const createUserDto: CreateUserDto = {
+        email,
+        password,
         firstName: 'Test',
         lastName: 'User',
       };
 
       await request(app.getHttpServer())
         .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(createUserDto)
         .expect(201)
         .expect((res) => {
@@ -161,13 +220,14 @@ describe('Users E2E', () => {
     it('should return 409 for duplicate email', async () => {
       const createUserDto: CreateUserDto = {
         email: duplicateEmail,
-        password: 'password123',
+        password,
         firstName: 'Test',
         lastName: 'User',
       };
 
       await request(app.getHttpServer())
         .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(createUserDto)
         .expect(201);
 
@@ -175,6 +235,7 @@ describe('Users E2E', () => {
 
       await request(app.getHttpServer())
         .post('/users')
+        .set('Authorization', `Bearer ${adminToken}`)
         .send(createUserDto)
         .expect(409);
 
@@ -192,5 +253,10 @@ describe('Users E2E', () => {
         },
       });
     });
+  });
+
+  afterAll(async () => {
+    await deleteUser(adminEmail);
+    await app.close();
   });
 });

@@ -30,6 +30,10 @@ export const loadConfiguration: ConfigFactory = () => {
       host: process.env[ENV_KEYS.USER_SERVICE_HOST],
       timeout: process.env[ENV_KEYS.SERVICE_TIMEOUT],
     },
+    jwt: {
+      secret: process.env[ENV_KEYS.JWT_SECRET],
+      expiresIn: process.env[ENV_KEYS.JWT_EXPIRES_IN] || '1h',
+    },
   };
 
   const result = environmentSchema.safeParse(config);

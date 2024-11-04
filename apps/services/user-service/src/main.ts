@@ -5,12 +5,12 @@
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { UserModule } from './user.module';
 import { LoggingInterceptor } from '@microservices-app/shared/backend';
 import { LoggerService, AppConfigService } from '@microservices-app/shared/backend';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(UserModule, {
+  const app = await NestFactory.create(AppModule, {
     logger: new LoggerService(),
   });
   

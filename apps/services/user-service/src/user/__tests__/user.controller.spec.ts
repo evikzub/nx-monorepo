@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
 import { UserController } from '../user.controller';
-import { UserService } from '../../services/user.service';
+import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
 import { 
   CreateUserDto, 

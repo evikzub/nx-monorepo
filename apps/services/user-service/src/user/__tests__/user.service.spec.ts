@@ -7,7 +7,7 @@ import {
   DatabaseModule,
   loadConfiguration,
 } from '@microservices-app/shared/backend';
-import { NewUser } from '@microservices-app/shared/types';
+import { NewUser, UserRole } from '@microservices-app/shared/types';
 
 describe('UserService', () => {
   const email = 'test.service@example.com';
@@ -62,6 +62,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       };
 
       const user = await service.createUser(newUser);
@@ -76,6 +77,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       };
 
       // Create first user
@@ -96,6 +98,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       });
       const user = await service.validateUser(email, 'password123');
       expect(user).toBeDefined();
@@ -116,6 +119,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       });
       // Find user
       const user = await service.findUserByEmail(email);
@@ -146,6 +150,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       });
       expect(user).toBeDefined();
       
@@ -165,6 +170,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       });
       expect(user).toBeDefined();
 
@@ -174,6 +180,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Duplicate',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       })
       expect(duplicateUser).toBeDefined();
       
@@ -198,6 +205,7 @@ describe('UserService', () => {
         password: 'password123',
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.PUBLIC]
       });
 
       expect(user).toBeDefined();

@@ -17,3 +17,8 @@ export * from './logger/trace.context';
 export * from './logger/trace.types';
 // Correlation
 export * from './logger/correlation.context';
+// Auth
+export * from './auth/guards/jwt-auth.guard';
+export * from './auth/guards/roles.guard';
+export * from './auth/decorators/roles.decorator';
+export * from './testing/auth-testing.utils';

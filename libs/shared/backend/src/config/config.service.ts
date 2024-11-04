@@ -36,6 +36,10 @@ export class AppConfigService {
         host: nestConfigService.get<string>(ENV_KEYS.USER_SERVICE_HOST),
         timeout: nestConfigService.get<string>(ENV_KEYS.SERVICE_TIMEOUT),
       },
+      jwt: {
+        secret: nestConfigService.get<string>(ENV_KEYS.JWT_SECRET),
+        expiresIn: nestConfigService.get<string>(ENV_KEYS.JWT_EXPIRES_IN) || '1h',
+      },
     };
 
     const parsedConfig = environmentSchema.safeParse(rawConfig);

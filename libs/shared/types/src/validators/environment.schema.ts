@@ -20,15 +20,22 @@ const consulConfigSchema = z.object({
   port: z.coerce.number().positive(),
 });
 
+export const jwtSchema = z.object({
+  secret: z.string().min(1),
+  expiresIn: z.string().default('1h'),
+});
+
 export const environmentSchema = z.object({
   nodeEnv: z.enum(['development', 'test', 'production']).default('development'),
   database: databaseConfigSchema,
   consul: consulConfigSchema,
   apiGateway: serviceConfigSchema,
   userService: serviceConfigSchema,
+  jwt: jwtSchema,
 });
 
 // Type inference from the schema
 export type EnvironmentConfig = z.infer<typeof environmentSchema>;
 export type DatabaseConfig = z.infer<typeof databaseConfigSchema>;
 export type ServiceConfig = z.infer<typeof serviceConfigSchema>;
+export type JwtConfig = z.infer<typeof jwtSchema>;

@@ -19,6 +19,13 @@ export class UserRepository implements OnModuleInit {
     this.db = await this.dbConfig.createConnection();
   }
 
+  // private async ensureConnection() {
+  //   if (!this.db) {
+  //     this.db = await this.dbConfig.createConnection();
+  //   }
+  //   return this.db;
+  // }
+  
   async findById(id: string): Promise<User | null> {
     const results = await this.db
       .select()

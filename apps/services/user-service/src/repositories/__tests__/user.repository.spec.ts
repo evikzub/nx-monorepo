@@ -5,7 +5,7 @@ import {
   loadConfiguration,
 } from '@microservices-app/shared/backend';
 import { UserRepository } from '../user.repository';
-import { NewUser, NotFoundError } from '@microservices-app/shared/types';
+import { NewUser, NotFoundError, UserRole } from '@microservices-app/shared/types';
 
 describe('UserRepository', () => {
   const email = 'test.repository@example.com';
@@ -56,12 +56,13 @@ describe('UserRepository', () => {
       password: 'password123',
       firstName: 'Test',
       lastName: 'User',
+      roles: [UserRole.ADMIN]
     };
 
     const user = await repository.create(newUser);
     expect(user).toBeDefined();
     expect(user.email).toBe(newUser.email);
+    expect(user.roles).toEqual([UserRole.ADMIN]);
   });
-
   // Add more tests...
 });
