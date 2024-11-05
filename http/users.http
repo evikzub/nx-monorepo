@@ -1,13 +1,53 @@
+### Register admin
+POST http://localhost:3011/api/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "password": "password",
+    "roles": ["admin"]
+}
+
+### Login
+# @name login
+POST http://localhost:3011/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "password": "password"
+}
+
+### Get all users
+@token = {{login.response.body.accessToken}}
 GET http://localhost:3011/api/users
+Authorization: Bearer {{token}}
 
 ### Get a user by ID
-@id = 8303242c-3511-4fc7-a9c3-d79ac8027679
+@id = 6a727c45-0e61-4d88-85ab-e34b4b063152
 GET http://localhost:3011/api/users/{{id}}
+Authorization: Bearer {{token}}
 
+
+### Register public
+# @name registerPublic
+POST http://localhost:3011/api/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe.public@example.com",
+    "password": "password"
+}
 
 ### Create a user
+@publicToken = {{registerPublic.response.body.accessToken}}
 POST http://localhost:3011/api/users
 Content-Type: application/json
+Authorization: Bearer {{publicToken}}
 
 {
     "firstName": "John",
@@ -15,5 +55,4 @@ Content-Type: application/json
     "email": "john.doe@example.com",
     "password": "password"
 }
-
 

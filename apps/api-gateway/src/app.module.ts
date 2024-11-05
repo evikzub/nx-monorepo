@@ -5,7 +5,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CircuitBreakerService } from './proxy/circuit-breaker.service';
 import { RetryService } from './proxy/retry.service';
 //import { DiscoveryService } from './discovery/discovery.service';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { AppConfigModule, AppConfigService } from '@microservices-app/shared/backend';
 import { ConsulModule } from './consul/consul.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +14,7 @@ import { LoadBalancerService } from './proxy/load-balancer.service';
 import { ProxyModule } from './proxy/proxy.module';
 import { HealthController } from './health/health.controller';
 import { TerminusModule } from '@nestjs/terminus';
+import { SharedAuthModule } from '@microservices-app/shared/backend';
 
 @Module({
   imports: [
@@ -24,6 +25,8 @@ import { TerminusModule } from '@nestjs/terminus';
     HttpModule,
     EventEmitterModule.forRoot(),
     ConsulModule,
+    AppConfigModule.forRoot(),
+    SharedAuthModule.register(),
     ProxyModule,
     DiscoveryModule,
     TerminusModule, // Add Terminus module for health checks

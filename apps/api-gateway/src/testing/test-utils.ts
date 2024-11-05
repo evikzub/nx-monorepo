@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, Logger } from '@nestjs/common';
 import { AppModule } from '../app.module';
 import nock from 'nock';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { AppConfigModule, AppConfigService } from '@microservices-app/shared/backend';
 import { AddressInfo } from 'net';
 import { PortManager } from './port-manager';
+import { JwtService } from '@nestjs/jwt';
+import { UserRole } from '@microservices-app/shared/types';
 
 
 export async function logAppDetails(app: INestApplication, logger: Logger | Console) {
@@ -34,7 +36,10 @@ export async function createTestingApp(): Promise<{
     
     //process.env.API_GATEWAY_PORT = '3020'; // TODO: Remove this
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        AppConfigModule.forRoot(), // Use forRoot to configure the module
+        AppModule
+      ],
     }).compile();
 
     const app = moduleFixture.createNestApplication();
@@ -51,11 +56,60 @@ export async function createTestingApp(): Promise<{
   }
 }
 
+export function createTestToken(
+  config: AppConfigService,
+  user: { 
+    id: string; 
+    email: string; 
+    roles: UserRole[]; 
+    firstName?: string; 
+    lastName?: string 
+  }, 
+  options: { expiresIn?: string } = {}
+) {
+  const jwtService = new JwtService({
+    secret: config.envConfig.jwt.secret || 'test-secret',
+    signOptions: { expiresIn: options.expiresIn || '1h' }
+  });
+
+  return jwtService.sign({
+    sub: user.id,
+    email: user.email,
+    roles: user.roles,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    type: 'access'
+  });
+}
+
 export function mockUserService(config: AppConfigService) {
-  const userService = config.envConfig.userService;
-  const baseUrl = `http://${userService.host}:${userService.port}`;
+  const baseUrl = `http://${config.envConfig.userService.host}:${config.envConfig.userService.port}`;
   
   return {
+    mockLogin: (loginData: any, response: any) => {
+      nock(baseUrl)
+        .post('/auth/login', loginData)
+        .reply(200, response);
+    },
+
+    mockLoginError: (loginData: any, error: any) => {
+      nock(baseUrl)
+        .post('/auth/login', loginData)
+        .reply(401, error);
+    },
+
+    mockRefreshToken: (refreshData: any, response: any) => {
+      nock(baseUrl)
+        .post('/auth/refresh', refreshData)
+        .reply(200, response);
+    },
+
+    mockRefreshTokenError: (refreshData: any, error: any) => {
+      nock(baseUrl)
+        .post('/auth/refresh', refreshData)
+        .reply(401, error);
+    },
+
     // Basic GET request mock
     mockGetUsers: (users: any[] = []) => {
       return nock(baseUrl)

@@ -13,6 +13,7 @@ export class AuthTestingUtils {
       roles: [UserRole.PUBLIC],
       firstName: 'Test',
       lastName: 'User',
+      type: 'access',
       ...payload
     };
 
@@ -26,6 +27,7 @@ export class AuthTestingUtils {
       roles: [UserRole.PUBLIC],
       firstName: 'Test',
       lastName: 'User',
+      type: 'access',
       ...override
     };
   }
@@ -77,8 +79,8 @@ export class AuthTestingUtils {
   ) {
     try {
       return jwtService.verify(token);
-    } catch (error) {
-        console.log('token error', error);
+    } catch {
+        //console.log('token error', error);
         return null;
     }
   }

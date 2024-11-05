@@ -2,10 +2,12 @@ import { INestApplication, Logger } from '@nestjs/common';
 import supertest from 'supertest';
 import nock from 'nock';
 import { AppConfigService } from '@microservices-app/shared/backend';
+import { UserRole, AuthErrorCode } from '@microservices-app/shared/types';
 import {
   createTestingApp,
   logAppDetails,
   mockUserService,
+  createTestToken
 } from '../testing/test-utils';
 import { PortManager } from '../testing/port-manager';
 
@@ -15,12 +17,30 @@ describe('Proxy Integration Tests', () => {
   let userServiceMock: ReturnType<typeof mockUserService>;
   const logger = new Logger('ProxyIntegrationTest');
 
+  // Test data
+  const testUser = {
+    id: '123',
+    email: 'test@example.com',
+    roles: [UserRole.ADMIN],
+    firstName: 'Test',
+    lastName: 'User'
+  };
+
+  const publicUser = {
+    id: '456',
+    email: 'public@example.com',
+    roles: [UserRole.PUBLIC],
+    firstName: 'Public',
+    lastName: 'User'
+  };
+
   beforeAll(async () => {
     try {
       logger.debug('Setting up test app...');
       const testApp = await createTestingApp();
       app = testApp.app;
       config = testApp.config;
+      //logger.debug('config', config);
       userServiceMock = mockUserService(config);
       //logger = new Logger('ProxyIntegrationTest');
 
@@ -77,77 +97,156 @@ describe('Proxy Integration Tests', () => {
     expect(nock.isDone()).toBeTruthy();
   });
 
-  describe('GET /users', () => {
-    it('should return users list', async () => {
-      const mockUsers = [
-        { id: 1, name: 'John' },
-        { id: 2, name: 'Jane' },
-      ];
+  describe('Auth Endpoints', () => {
+    describe('POST /auth/login', () => {
+      it('should forward login request to user service', async () => {
+        const loginData = {
+          email: 'test@example.com',
+          password: 'password123'
+        };
 
-      logger.debug('Setting up mock for GET /users');
-      userServiceMock.mockGetUsers(mockUsers);
+        const mockResponse = {
+          accessToken: 'test-access-token',
+          refreshToken: 'test-refresh-token',
+          user: testUser
+        };
 
-      const response = await supertest(app.getHttpServer())
-        .get('/users')
-        .expect(200)
-        .catch((error) => {
-          logger.error('Test failed', {
-            error: error.message,
-            response: error.response?.body,
-          });
-          throw error;
+        userServiceMock.mockLogin(loginData, mockResponse);
+
+        const response = await supertest(app.getHttpServer())
+          .post('/auth/login')
+          .send(loginData)
+          .expect(200);
+
+        expect(response.body).toEqual(mockResponse);
+      });
+
+      it('should handle invalid credentials', async () => {
+        const loginData = {
+          email: 'wrong@example.com',
+          password: 'wrongpass'
+        };
+
+        userServiceMock.mockLoginError(loginData, {
+          code: AuthErrorCode.INVALID_CREDENTIALS,
+          message: 'Invalid email or password'
         });
 
-      expect(response.body).toEqual(mockUsers);
+        await supertest(app.getHttpServer())
+          .post('/auth/login')
+          .send(loginData)
+          .expect(401);
+      });
     });
 
-    // TODO: Implement this test with the pagination
-    it.skip('should handle query parameters', async () => {
-      const query = { page: '1', limit: '10' };
-      const mockResponse = {
-        data: [],
-        pagination: { page: 1, limit: 10, total: 0 },
-      };
+    describe('POST /auth/refresh', () => {
+      it('should forward refresh token request', async () => {
+        const refreshData = {
+          refreshToken: 'valid-refresh-token'
+        };
 
-      userServiceMock.mockGetUsersWithQuery(query, mockResponse);
+        const mockResponse = {
+          accessToken: 'new-access-token',
+          refreshToken: 'new-refresh-token',
+          user: testUser
+        };
 
-      const response = await supertest(app.getHttpServer())
-        .get('/users')
-        .query(query)
-        .expect(200);
+        userServiceMock.mockRefreshToken(refreshData, mockResponse);
 
-      expect(response.body).toEqual(mockResponse);
+        const response = await supertest(app.getHttpServer())
+          .post('/auth/refresh')
+          .send(refreshData)
+          .expect(200);
+
+        expect(response.body).toEqual(mockResponse);
+      });
+
+      it('should handle invalid refresh token', async () => {
+        const refreshData = {
+          refreshToken: 'invalid-refresh-token'
+        };
+
+        userServiceMock.mockRefreshTokenError(refreshData, {
+          code: AuthErrorCode.INVALID_REFRESH_TOKEN,
+          message: 'Invalid refresh token'
+        });
+
+        await supertest(app.getHttpServer())
+          .post('/auth/refresh')
+          .send(refreshData)
+          .expect(401);
+      });
+    });
+  });
+
+  describe('Protected Endpoints', () => {
+    describe('GET /users', () => {
+      it('should require authentication', async () => {
+        await supertest(app.getHttpServer())
+          .get('/users')
+          .expect(401);
+      });
+
+      it('should require admin role', async () => {
+        const token = createTestToken(config, publicUser);
+
+        await supertest(app.getHttpServer())
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(403);
+      });
+
+      it('should return users list for admin', async () => {
+        const token = createTestToken(config, testUser);
+        const mockUsers = [testUser, publicUser];
+
+        userServiceMock.mockGetUsers(mockUsers);
+
+        const response = await supertest(app.getHttpServer())
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(200);
+
+        expect(response.body).toEqual(mockUsers);
+      });
+
+      it('should handle expired token', async () => {
+        const expiredToken = createTestToken(config, testUser, { expiresIn: '-1h' });
+
+        await supertest(app.getHttpServer())
+          .get('/users')
+          .set('Authorization', `Bearer ${expiredToken}`)
+          .expect(401)
+          .expect(res => {
+            //logger.debug('Expired token response:', res.body);
+            expect(res.body.message).toBe('Invalid token');
+            //expect(res.body.code).toBe(AuthErrorCode.TOKEN_EXPIRED);
+          });
+      });
     });
 
-    // TODO: Implement this test with the authentication
-    it.skip('should handle authentication', async () => {
-      const token = 'test-token';
-      const mockResponse = { authenticated: true };
+    describe('Error Handling', () => {
+      it('should handle service errors with valid auth', async () => {
+        const token = createTestToken(config, testUser);
+        userServiceMock.mockServiceError();
 
-      userServiceMock.mockAuthenticatedRequest(token, mockResponse);
+        const response = await supertest(app.getHttpServer())
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(500);
 
-      const response = await supertest(app.getHttpServer())
-        .get('/users')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200);
+        expect(response.body).toHaveProperty('message');
+      });
 
-      expect(response.body).toEqual(mockResponse);
-    });
+      it('should handle network errors with valid auth', async () => {
+        const token = createTestToken(config, testUser);
+        userServiceMock.mockNetworkError();
 
-    it('should handle service errors', async () => {
-      userServiceMock.mockServiceError();
-
-      const response = await supertest(app.getHttpServer())
-        .get('/users')
-        .expect(500);
-
-      expect(response.body).toHaveProperty('message');
-    });
-
-    it('should handle network errors', async () => {
-      userServiceMock.mockNetworkError();
-
-      await supertest(app.getHttpServer()).get('/users').expect(503);
+        await supertest(app.getHttpServer())
+          .get('/users')
+          .set('Authorization', `Bearer ${token}`)
+          .expect(503);
+      });
     });
   });
 });

@@ -22,3 +22,7 @@ export * from './auth/guards/jwt-auth.guard';
 export * from './auth/guards/roles.guard';
 export * from './auth/decorators/roles.decorator';
 export * from './testing/auth-testing.utils';
+// Auth Strategies
+export * from './auth/strategies/jwt.strategy';
+// Auth Module
+export * from './auth/auth.module';

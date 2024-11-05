@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import chalk from 'chalk';
+import { blue, white, yellow, gray, red, cyan, green } from 'chalk';
 import {
   LogLevel,
   RequestLogEntry,
@@ -201,10 +201,10 @@ export class LoggingInterceptor implements NestInterceptor {
   ): string {
     return [
       this.colorMethod(method),
-      chalk.white(url),
+      white(url),
       statusCode && this.colorStatus(statusCode),
-      responseTime && chalk.yellow(`${responseTime}ms`),
-      ip && chalk.gray(ip),
+      responseTime && yellow(`${responseTime}ms`),
+      ip && gray(ip),
     ].filter(Boolean).join(' ');
   }
 
@@ -219,34 +219,34 @@ export class LoggingInterceptor implements NestInterceptor {
   private colorMethod(method: string): string {
     switch (method.toUpperCase()) {
       case 'GET':
-        return chalk.green(method);
+        return green(method);
       case 'POST':
-        return chalk.yellow(method);
+        return yellow(method);
       case 'PUT':
-        return chalk.blue(method);
+        return blue(method);
       case 'DELETE':
-        return chalk.red(method);
+        return red(method);
       case 'PATCH':
-        return chalk.cyan(method);
+        return cyan(method);
       default:
-        return chalk.white(method);
+        return white(method);
     }
   }
 
   private colorStatus(status: number): string {
     if (status >= 500) {
-      return chalk.red(status);
+      return red(status);
     }
     if (status >= 400) {
-      return chalk.yellow(status);
+      return yellow(status);
     }
     if (status >= 300) {
-      return chalk.cyan(status);
+      return cyan(status);
     }
     if (status >= 200) {
-      return chalk.green(status);
+      return green(status);
     }
-    return chalk.white(status);
+    return white(status);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

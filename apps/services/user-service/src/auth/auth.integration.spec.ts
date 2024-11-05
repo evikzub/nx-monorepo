@@ -396,7 +396,7 @@ describe('Auth Integration', () => {
           })
           .expect(400)
           .expect(res => {
-            console.log('res.body', res.body);
+            //console.log('res.body', res.body);
             expect(res.body).toHaveProperty('message');
             expect(res.body.message).toContain('Validation failed');
           });

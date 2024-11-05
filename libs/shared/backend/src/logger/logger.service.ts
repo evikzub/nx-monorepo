@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, LoggerService as NestLoggerService } from '@nestjs/common';
-import chalk from 'chalk';
+import {blue, red, green, white, cyan, yellow, gray, Chalk } from 'chalk';
 //import { LogEntry } from './loging.config';
 
 @Injectable()
@@ -21,28 +21,28 @@ export class LoggerService implements NestLoggerService {
   log(message: string, ...optionalParams: [...any, string?]) {
     //console.log(optionalParams);
     const { context, data } = this.getParams(optionalParams);
-    console.log(this.formatMessage('LOG', message, context, data, chalk.blue));
+    console.log(this.formatMessage('LOG', message, context, data, blue));
     //console.log('LOG', message, context);
   }
 
   error(message: string, trace?: string, context?: string, data?: unknown) {
     //console.log('ERROR: CONTEXT: ', context);
     //console.log('ERROR: DATA: ', data);
-    console.error(this.formatMessage('ERROR', message, context, data, chalk.red));
+    console.error(this.formatMessage('ERROR', message, context, data, red));
     if (trace) {
-      console.error(chalk.red(trace));
+      console.error(red(trace));
     }
   }
 
   warn(message: string, ...optionalParams: [...any, string?]) {
     const { context, data } = this.getParams(optionalParams);
-    console.warn(this.formatMessage('WARN', message, context, data, chalk.yellow));
+    console.warn(this.formatMessage('WARN', message, context, data, yellow));
   }
 
   debug(message: any, ...optionalParams: [...any, string?]){
     //console.debug(optionalParams);
     const { context, data } = this.getParams(optionalParams);
-    console.debug(this.formatMessage('DEBUG', message, context, data, chalk.green));
+    console.debug(this.formatMessage('DEBUG', message, context, data, green));
   }
 
   // debug(message: string, context?: string, data?: unknown) {
@@ -51,7 +51,7 @@ export class LoggerService implements NestLoggerService {
 
   verbose(message: string, ...optionalParams: [...any, string?]) {
     const { context, data } = this.getParams(optionalParams);
-    console.log(this.formatMessage('VERBOSE', message, context, data, chalk.cyan));
+    console.log(this.formatMessage('VERBOSE', message, context, data, cyan));
   }
 
   private formatMessage(
@@ -59,31 +59,31 @@ export class LoggerService implements NestLoggerService {
     message: string, 
     context?: string, 
     data?: unknown,
-    colorFn: chalk.Chalk = chalk.white
+    colorFn: Chalk = white
   ): string {
     const timestamp = new Date().toISOString();
-    const contextStr = context ? `[${chalk.yellow(context)}] ` : '';
+    const contextStr = context ? `[${yellow(context)}] ` : '';
     const levelStr = this.colorLevel(level);
     const dataStr = data ? `\n ${JSON.stringify(data, null, 2)}` : '';
     
     //console.log('CONTEXT: ', contextStr);
-    return `${chalk.gray(timestamp)} ${levelStr} ${contextStr} ${colorFn(message)} ${dataStr}`; 
+    return `${gray(timestamp)} ${levelStr} ${contextStr} ${colorFn(message)} ${dataStr}`; 
   }
 
   private colorLevel(level: string): string {
     switch (level) {
       case 'LOG':
-        return chalk.blue(level);
+        return blue(level);
       case 'ERROR':
-        return chalk.red(level);
+        return red(level);
       case 'WARN':
-        return chalk.yellow(level);
+        return yellow(level);
       case 'DEBUG':
-        return chalk.green(level);
+        return green(level);
       case 'VERBOSE':
-        return chalk.cyan(level);
+        return cyan(level);
       default:
-        return chalk.white(level);
+        return white(level);
     }
   }
 } 

@@ -1,7 +1,8 @@
-import { Controller, All, Req, Logger } from '@nestjs/common';
+import { Controller, All, Req, UseGuards, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { ProxyService } from './proxy.service';
-import { AppConfigService, TraceService } from '@microservices-app/shared/backend';
+import { AppConfigService, Roles, JwtAuthGuard, RolesGuard, TraceService } from '@microservices-app/shared/backend';
+import { UserRole } from '@microservices-app/shared/types';
 
 @Controller()
 export class ProxyController {
@@ -12,37 +13,71 @@ export class ProxyController {
     private readonly config: AppConfigService
   ) {}
 
-  @All('users')
-  @All('users/*')
-  async userService(@Req() request: Request) {
-    const serviceConfig = this.config.envConfig.userService;
-    
-    this.logger.debug(`Proxying request to ${serviceConfig.name}: ${request.url}`);
+  @All(['auth/login', 'auth/register', 'auth/refresh'])
+  async publicAuthEndpoints(@Req() request: Request) {
+    this.logger.debug(`Handling public auth request: ${request.method} ${request.url}`);
+    return this.forwardToUserService(request);
+  }
 
-    // Add trace span for the proxy operation
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @All(['users', 'users/*'])
+  async protectedUserEndpoints(@Req() request: Request) {
+    this.logger.debug(`Handling protected user request: ${request.method} ${request.url}`);
+    return this.forwardToUserService(request);
+  }
+
+  private async forwardToUserService(request: Request) {
+    const serviceConfig = this.config.envConfig.userService;
+    const targetUrl = request.url;
+    
+    this.logger.debug({
+      message: 'Forwarding request to user service',
+      method: request.method,
+      originalUrl: request.originalUrl,
+      targetUrl,
+      serviceHost: serviceConfig.host,
+      servicePort: serviceConfig.port,
+      headers: request.headers
+    });
+
     const span = TraceService.startSpan('proxy_request', {
-        serviceName: serviceConfig.name,
-        targetUrl: request.url
-        });
+      serviceName: serviceConfig.name,
+      targetUrl
+    });
 
     try {
-        const result = await this.proxyService.forward(
-            serviceConfig.name,
-            request.url,
-            {
-              method: request.method,
-              url: request.url,
-              headers: request.headers as Record<string, string>,
-              body: request.body,
-              query: request.query as Record<string, string>,
-            }
-        );
+      const result = await this.proxyService.forward(
+        serviceConfig.name,
+        targetUrl,
+        {
+          method: request.method,
+          url: targetUrl,
+          headers: request.headers as Record<string, string>,
+          body: request.body,
+          query: request.query as Record<string, string>,
+        }
+      );
 
-        TraceService.endSpan(span);
-        return result;
+      this.logger.debug({
+        message: 'Proxy request successful',
+        targetUrl,
+        statusCode: result.statusCode,
+        responseHeaders: result.headers
+      });
+
+      TraceService.endSpan(span);
+      return result;
     } catch (error) {
-        TraceService.endSpan(span, error);
-        throw error;
+      this.logger.error({
+        message: 'Proxy request failed',
+        targetUrl,
+        error: error.message,
+        stack: error.stack,
+        details: error.response || error
+      });
+      TraceService.endSpan(span, error);
+      throw error;
     }
   }
 } 
