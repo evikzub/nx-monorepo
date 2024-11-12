@@ -1,33 +1,112 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, Logger } from '@nestjs/common';
 import { UserRepository } from '../repositories/user.repository';
-import { NewUser, User, UpdateUser } from '@microservices-app/shared/types';
+import { NewUser, User, UpdateUser, NotificationPriority, NotificationPayload, NotificationType, NotificationRoutingKey } from '@microservices-app/shared/types';
 import * as bcrypt from 'bcrypt';
-import { SpanType, TraceService } from '@microservices-app/shared/backend';
+import { v4 as uuidv4 } from 'uuid';
+import { AppConfigService, CorrelationService, RabbitMQService, SpanType, TraceService } from '@microservices-app/shared/backend';
 
 @Injectable()
 export class UserService {
   private readonly SALT_ROUNDS = 10;
+  private readonly logger = new Logger(UserService.name);
 
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly rabbitMQService: RabbitMQService,
+    private readonly configService: AppConfigService
+  ) {}
 
   async createUser(data: NewUser): Promise<User> {
-    const existingUser = await this.userRepository.findByEmail(data.email);
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
-    }
-
-    const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
-
-    // Tracing example -> Database operation
-    const span = TraceService.startSpan(SpanType.DB_TRANSACTION, {
-        operation: 'createUser'
-        });
-    const user = await this.userRepository.create({
-      ...data,
-      password: hashedPassword,
+    const span = TraceService.startSpan(SpanType.BUSINESS_LOGIC, {
+      operation: 'createUser'
     });
-    TraceService.endSpan(span);
-    return user;
+
+    try {
+      // Check existing user
+      const existingUser = await this.userRepository.findByEmail(data.email);
+      if (existingUser) {
+        throw new ConflictException('User with this email already exists');
+      }
+
+      // Hash password
+      const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
+
+      // Tracing insert -> Database operation
+      const dbSpan = TraceService.startSpan(SpanType.DB_TRANSACTION, {
+        operation: 'createUser'
+      });
+
+      // Create user
+      const user = await this.userRepository.create({
+        ...data,
+        password: hashedPassword,
+      });
+
+      TraceService.endSpan(dbSpan);
+
+      // Send verification email
+      const notificationSpan = TraceService.startSpan(SpanType.MESSAGE_PUBLISH, {
+        operation: 'sendVerificationEmail'
+      });
+
+      await this.sendVerificationEmail(user);
+
+      TraceService.endSpan(notificationSpan);
+      TraceService.endSpan(span);
+
+      return user;
+    } catch (error) {
+      TraceService.endSpan(span, { error: error.message });
+      throw error;
+    }
+  }
+
+  private async sendVerificationEmail(user: User): Promise<void> {
+    const correlationId = CorrelationService.getRequestId() || uuidv4();
+
+    try {
+      const verificationToken = uuidv4(); // In practice, store this token
+      const verificationUrl = `http://localhost:4200/verify-email?token=${verificationToken}`;
+
+      const notificationPayload: NotificationPayload = {
+        type: NotificationType.EMAIL_VERIFICATION,
+        recipient: user.email,
+        templateId: 'email-verification',
+        data: {
+          firstName: user.firstName,
+          verificationUrl,
+        },
+        priority: NotificationPriority.HIGH,
+        correlationId,
+      };
+
+      // await this.rabbitMQService.publishQueue(
+      //   this.configService.envConfig.rabbitmq.queues.notifications,
+      //   // 'notifications.exchange',
+      //   // 'notification.email',
+      //   notificationPayload
+      // );
+
+      this.logger.debug(
+        `Publishing verification email to ${NotificationRoutingKey.EMAIL_VERIFICATION} using ${this.configService.envConfig.rabbitmq.exchanges.notifications} exchange`);
+      await this.rabbitMQService.publishExchange(
+        this.configService.envConfig.rabbitmq.exchanges.notifications,
+        NotificationRoutingKey.EMAIL_VERIFICATION,
+        //'notification.email.verification',
+        notificationPayload
+      );
+
+      this.logger.debug(`Verification email queued for ${user.email}`, {
+        correlationId
+      });
+    } catch (error) {
+      this.logger.error(`Failed to queue verification email: ${error.message}`, {
+        correlationId,
+        userId: user.id,
+        email: user.email
+      });
+      //throw error;
+    }
   }
 
   async findUserById(id: string): Promise<User> {

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
+import { AppConfigService, DatabaseModule, loadConfiguration, RabbitMQService } from '@microservices-app/shared/backend';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
@@ -20,6 +20,11 @@ describe('UserController Integration Tests', () => {
   let repository: UserRepository;
   let moduleRef: TestingModule;
 
+  // Create mock for RabbitMQService
+  const mockRabbitMQService = {
+    publishExchange: jest.fn().mockResolvedValue(true),
+  };
+  
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       imports: [
@@ -29,7 +34,12 @@ describe('UserController Integration Tests', () => {
         DatabaseModule,
       ],
       controllers: [UserController],
-      providers: [UserService, UserRepository],
+      providers: [UserService, UserRepository, AppConfigService,
+        {
+          provide: RabbitMQService,
+          useValue: mockRabbitMQService,
+        },
+      ],
     }).compile();
 
     await moduleRef.init();

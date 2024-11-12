@@ -26,3 +26,7 @@ export * from './testing/auth-testing.utils';
 export * from './auth/strategies/jwt.strategy';
 // Auth Module
 export * from './auth/auth.module';
+// RabbitMQ
+export * from './rabbitmq/rabbitmq.module';
+export * from './rabbitmq/rabbitmq.service';
+export * from './rabbitmq/rabbitmq.setup.service';

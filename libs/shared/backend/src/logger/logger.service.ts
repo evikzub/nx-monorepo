@@ -25,13 +25,16 @@ export class LoggerService implements NestLoggerService {
     //console.log('LOG', message, context);
   }
 
-  error(message: string, trace?: string, context?: string, data?: unknown) {
-    //console.log('ERROR: CONTEXT: ', context);
+  //error(message: string, trace?: string, context?: string, data?: unknown) {
+  error(message: string, ...optionalParams: [...any, string?]) {
+    console.log(message);
+    const { context, data } = this.getParams(optionalParams);
+  //console.log('ERROR: CONTEXT: ', context);
     //console.log('ERROR: DATA: ', data);
     console.error(this.formatMessage('ERROR', message, context, data, red));
-    if (trace) {
-      console.error(red(trace));
-    }
+    // if (trace) {
+    //   console.error(red(trace));
+    // }
   }
 
   warn(message: string, ...optionalParams: [...any, string?]) {
@@ -65,9 +68,10 @@ export class LoggerService implements NestLoggerService {
     const contextStr = context ? `[${yellow(context)}] ` : '';
     const levelStr = this.colorLevel(level);
     const dataStr = data ? `\n ${JSON.stringify(data, null, 2)}` : '';
+    const msg = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
     
     //console.log('CONTEXT: ', contextStr);
-    return `${gray(timestamp)} ${levelStr} ${contextStr} ${colorFn(message)} ${dataStr}`; 
+    return `${gray(timestamp)} ${levelStr} ${contextStr} ${colorFn(msg)} ${dataStr}`; 
   }
 
   private colorLevel(level: string): string {

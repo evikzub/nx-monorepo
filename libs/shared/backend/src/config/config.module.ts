@@ -18,6 +18,7 @@ export class AppConfigModule {
       ],
       providers: [AppConfigService],
       exports: [AppConfigService],
+      global: true,
     };
   }
 

@@ -4,17 +4,26 @@ import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
 import { ConfigModule } from '@nestjs/config';
 import {
+  AppConfigService,
   DatabaseModule,
   loadConfiguration,
+  RabbitMQService,
 } from '@microservices-app/shared/backend';
-import { NewUser, UserRole } from '@microservices-app/shared/types';
+import { NewUser, NotificationRoutingKey, UserRole } from '@microservices-app/shared/types';
 
 describe('UserService', () => {
   const email = 'test.service@example.com';
   const duplicateEmail = 'duplicate.service@example.com';
   let service: UserService;
   let repository: UserRepository;
+  //let rabbitMQService: RabbitMQService;
   let moduleRef: TestingModule;
+  let config: AppConfigService;
+
+  // Create mock for RabbitMQService
+  const mockRabbitMQService = {
+    publishExchange: jest.fn().mockResolvedValue(true),
+  };
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -24,13 +33,20 @@ describe('UserService', () => {
         }),
         DatabaseModule,
       ],
-      providers: [UserService, UserRepository],
+      providers: [UserService, UserRepository, AppConfigService,
+        {
+          provide: RabbitMQService,
+          useValue: mockRabbitMQService,
+        },
+      ],
     }).compile();
 
     await moduleRef.init();
 
     service = moduleRef.get<UserService>(UserService);
     repository = moduleRef.get<UserRepository>(UserRepository);
+    //rabbitMQService = moduleRef.get<RabbitMQService>(RabbitMQService);
+    config = moduleRef.get<AppConfigService>(AppConfigService);
   });
 
   afterAll(async () => {
@@ -45,6 +61,8 @@ describe('UserService', () => {
   }
 
   beforeEach(async () => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
     // Clean up database before each test
     try {
       await deleteUser(email);
@@ -55,6 +73,68 @@ describe('UserService', () => {
     }
   });
 
+  // Add this test to verify the notification is sent
+  describe('createUser with notification', () => {
+    it('should create user and send verification email', async () => {
+        const newUser: NewUser = {
+          email,
+          password: 'password123',
+          firstName: 'Test',
+          lastName: 'User',
+          roles: [UserRole.PUBLIC]
+        };
+  
+        const user = await service.createUser(newUser);
+  
+        // Verify user was created
+        expect(user).toBeDefined();
+        expect(user.email).toBe(newUser.email);
+  
+        // Verify notification was sent
+        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledTimes(1);
+        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledWith(
+          config.envConfig.rabbitmq.exchanges.notifications,
+          NotificationRoutingKey.EMAIL_VERIFICATION,
+          expect.objectContaining({
+            type: 'EMAIL_VERIFICATION',
+            recipient: email,
+            templateId: 'email-verification',
+            data: expect.objectContaining({
+              firstName: 'Test',
+              verificationUrl: expect.stringContaining('verify-email?token=')
+            })
+          })
+        );
+      });
+  
+      it('should handle notification failure gracefully', async () => {
+        // Mock the publishQueue to fail
+        mockRabbitMQService.publishExchange.mockRejectedValueOnce(new Error('Queue error'));
+  
+        const newUser: NewUser = {
+          email,
+          password: 'password123',
+          firstName: 'Test',
+          lastName: 'User',
+          roles: [UserRole.PUBLIC]
+        };
+  
+        // The creation should still succeed even if notification fails
+        //const user = await service.createUser(newUser);
+        const user = await service.createUser(newUser).catch(error => {
+          // This should not happen - we expect the function to succeed
+          fail('User creation should not fail when notification fails: ' + error.message);
+        });
+
+        // Verify user was created successfully
+        expect(user).toBeDefined();
+        expect(user.email).toBe(newUser.email);
+
+        // Verify the notification was attempted
+        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledTimes(1);
+      });
+    });
+  
   describe('createUser', () => {
     it('should create a new user', async () => {
       const newUser: NewUser = {

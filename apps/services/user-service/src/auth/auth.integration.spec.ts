@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth.module';
-import { AppConfigModule, AppConfigService, DatabaseModule } from '@microservices-app/shared/backend';
+import { AppConfigModule, AppConfigService, DatabaseModule, RabbitMQService } from '@microservices-app/shared/backend';
 import { AuthTestingUtils } from '@microservices-app/shared/backend';
 import { AuthErrorCode, UserRole } from '@microservices-app/shared/types';
 import { UserModule } from '../user/user.module';
@@ -18,6 +18,7 @@ describe('Auth Integration', () => {
   let userService: UserService;
   let repository: UserRepository;
 
+  // TODO: Change it to .env.test
   const mockConfigService = {
     envConfig: {
       nodeEnv: 'test',
@@ -41,9 +42,25 @@ describe('Auth Integration', () => {
         port: '3001',
         host: 'localhost',
         timeout: '5000'
+      },
+      rabbitmq: {
+        url: 'amqp://guest:guest@localhost:5672',
+        queues: {
+          notifications: 'notifications-test',
+          deadLetter: 'dead-letter-test'
+        },
+        exchanges: {
+          notifications: 'notifications-test',
+          deadLetter: 'dead-letter-test'
+        }
       }
     }
   };
+
+    // Create mock for RabbitMQService
+    const mockRabbitMQService = {
+        publishExchange: jest.fn().mockResolvedValue(true),
+      };
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -53,6 +70,12 @@ describe('Auth Integration', () => {
         UserModule,
         AuthModule
       ],
+      providers: [
+        {
+          provide: RabbitMQService,
+          useValue: mockRabbitMQService,
+        },
+      ],
     })
       .overrideProvider(AppConfigService)
       .useValue(mockConfigService)
@@ -61,12 +84,6 @@ describe('Auth Integration', () => {
     app = moduleFixture.createNestApplication();
     jwtService = moduleFixture.get<JwtService>(JwtService);
 
-    //const configService = app.get(AppConfigService);
-    //console.log('configService', configService.envConfig.database.url);
-    //const dbConfig = moduleFixture.get<DatabaseConfig>(DatabaseConfig);
-    //console.log('dbConfig', dbConfig);
-    // Create test user in database
-    //const userService = app.get('UserService');
     userService = moduleFixture.get<UserService>(UserService);
     repository = moduleFixture.get<UserRepository>(UserRepository);
 

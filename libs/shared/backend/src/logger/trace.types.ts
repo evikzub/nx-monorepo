@@ -20,6 +20,8 @@ export enum SpanType {
   EMAIL_SEND = 'email_send',
   NOTIFICATION = 'notification',
   PAYMENT_PROCESS = 'payment_process',
+  BUSINESS_LOGIC = "BUSINESS_LOGIC",
+  MESSAGE_PUBLISH = "MESSAGE_PUBLISH",
 }
 
 export enum SpanCategory {
@@ -43,8 +45,10 @@ export const SpanCategories: Record<SpanType, SpanCategory> = {
   [SpanType.VALIDATION]: SpanCategory.BUSINESS,
   [SpanType.AUTHORIZATION]: SpanCategory.BUSINESS,
   [SpanType.FILE_OPERATION]: SpanCategory.BUSINESS,
+  [SpanType.BUSINESS_LOGIC]: SpanCategory.BUSINESS,
 
   [SpanType.EMAIL_SEND]: SpanCategory.INTEGRATION,
   [SpanType.NOTIFICATION]: SpanCategory.INTEGRATION,
   [SpanType.PAYMENT_PROCESS]: SpanCategory.INTEGRATION,
+  [SpanType.MESSAGE_PUBLISH]: SpanCategory.INTEGRATION,
 }; 
