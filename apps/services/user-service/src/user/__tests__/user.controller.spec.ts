@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { AppConfigService, DatabaseModule, loadConfiguration, RabbitMQService } from '@microservices-app/shared/backend';
+import { AppConfigService, DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
@@ -10,21 +10,18 @@ import {
   userResponseSchema 
 } from '@microservices-app/shared/types';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { mockAmqpConnection } from './mocks/amqp-connection.mock';
+
 
 describe('UserController Integration Tests', () => {
   const email = 'test.controller@example.com';
   const duplicateEmail = 'duplicate.controller@example.com';
     
   let controller: UserController;
-  //let service: UserService;
   let repository: UserRepository;
   let moduleRef: TestingModule;
 
-  // Create mock for RabbitMQService
-  const mockRabbitMQService = {
-    publishExchange: jest.fn().mockResolvedValue(true),
-  };
-  
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
       imports: [
@@ -36,17 +33,15 @@ describe('UserController Integration Tests', () => {
       controllers: [UserController],
       providers: [UserService, UserRepository, AppConfigService,
         {
-          provide: RabbitMQService,
-          useValue: mockRabbitMQService,
+          provide: AmqpConnection,
+          useValue: mockAmqpConnection,
         },
       ],
     }).compile();
 
     await moduleRef.init();
 
-    //controller = moduleRef.get<UserController>(UserController);
     controller = await moduleRef.resolve(UserController);
-    //service = moduleRef.get<UserService>(UserService);
     repository = moduleRef.get<UserRepository>(UserRepository);
   });
 

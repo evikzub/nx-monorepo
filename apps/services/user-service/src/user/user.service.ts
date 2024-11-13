@@ -3,7 +3,8 @@ import { UserRepository } from '../repositories/user.repository';
 import { NewUser, User, UpdateUser, NotificationPriority, NotificationPayload, NotificationType, NotificationRoutingKey } from '@microservices-app/shared/types';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import { AppConfigService, CorrelationService, RabbitMQService, SpanType, TraceService } from '@microservices-app/shared/backend';
+import { AppConfigService, CorrelationService, SpanType, TraceService } from '@microservices-app/shared/backend';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,7 @@ export class UserService {
 
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly rabbitMQService: RabbitMQService,
+    private readonly amqpConnection: AmqpConnection,
     private readonly configService: AppConfigService
   ) {}
 
@@ -89,11 +90,20 @@ export class UserService {
 
       this.logger.debug(
         `Publishing verification email to ${NotificationRoutingKey.EMAIL_VERIFICATION} using ${this.configService.envConfig.rabbitmq.exchanges.notifications} exchange`);
-      await this.rabbitMQService.publishExchange(
+      // await this.rabbitMQService.publishExchange(
+      //   this.configService.envConfig.rabbitmq.exchanges.notifications,
+      //   NotificationRoutingKey.EMAIL_VERIFICATION,
+      //   //'notification.email.verification',
+      //   notificationPayload
+      // );
+      await this.amqpConnection.publish(
         this.configService.envConfig.rabbitmq.exchanges.notifications,
         NotificationRoutingKey.EMAIL_VERIFICATION,
-        //'notification.email.verification',
-        notificationPayload
+        notificationPayload,
+        // {
+        //   persistent: true,
+        //   messageId: correlationId,
+        // }
       );
 
       this.logger.debug(`Verification email queued for ${user.email}`, {

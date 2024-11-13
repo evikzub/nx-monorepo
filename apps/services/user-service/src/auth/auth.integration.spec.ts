@@ -3,12 +3,14 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { JwtService } from '@nestjs/jwt';
 import { AuthModule } from './auth.module';
-import { AppConfigModule, AppConfigService, DatabaseModule, RabbitMQService } from '@microservices-app/shared/backend';
+import { AppConfigModule, AppConfigService, DatabaseModule } from '@microservices-app/shared/backend';
 import { AuthTestingUtils } from '@microservices-app/shared/backend';
 import { AuthErrorCode, UserRole } from '@microservices-app/shared/types';
 import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
 import { UserRepository } from '../repositories/user.repository';
+import { mockAmqpConnection } from '../user/__tests__/mocks/amqp-connection.mock';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 describe('Auth Integration', () => {
   const email = 'test.auth.integration@example.com';
@@ -57,11 +59,6 @@ describe('Auth Integration', () => {
     }
   };
 
-    // Create mock for RabbitMQService
-    const mockRabbitMQService = {
-        publishExchange: jest.fn().mockResolvedValue(true),
-      };
-
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
@@ -70,15 +67,17 @@ describe('Auth Integration', () => {
         UserModule,
         AuthModule
       ],
-      providers: [
-        {
-          provide: RabbitMQService,
-          useValue: mockRabbitMQService,
-        },
-      ],
+    //   providers: [
+    //     {
+    //       provide: AmqpConnection,
+    //       useValue: mockAmqpConnection,
+    //     },
+    //   ],
     })
       .overrideProvider(AppConfigService)
       .useValue(mockConfigService)
+      .overrideProvider(AmqpConnection)
+      .useValue(mockAmqpConnection)
       .compile();
 
     app = moduleFixture.createNestApplication();

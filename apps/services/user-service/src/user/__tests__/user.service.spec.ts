@@ -7,23 +7,18 @@ import {
   AppConfigService,
   DatabaseModule,
   loadConfiguration,
-  RabbitMQService,
 } from '@microservices-app/shared/backend';
-import { NewUser, NotificationRoutingKey, UserRole } from '@microservices-app/shared/types';
+import { NewUser, NotificationPriority, NotificationRoutingKey, UserRole } from '@microservices-app/shared/types';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { mockAmqpConnection } from './mocks/amqp-connection.mock';
 
 describe('UserService', () => {
   const email = 'test.service@example.com';
   const duplicateEmail = 'duplicate.service@example.com';
   let service: UserService;
   let repository: UserRepository;
-  //let rabbitMQService: RabbitMQService;
   let moduleRef: TestingModule;
   let config: AppConfigService;
-
-  // Create mock for RabbitMQService
-  const mockRabbitMQService = {
-    publishExchange: jest.fn().mockResolvedValue(true),
-  };
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
@@ -35,8 +30,8 @@ describe('UserService', () => {
       ],
       providers: [UserService, UserRepository, AppConfigService,
         {
-          provide: RabbitMQService,
-          useValue: mockRabbitMQService,
+          provide: AmqpConnection,
+          useValue: mockAmqpConnection,
         },
       ],
     }).compile();
@@ -45,7 +40,6 @@ describe('UserService', () => {
 
     service = moduleRef.get<UserService>(UserService);
     repository = moduleRef.get<UserRepository>(UserRepository);
-    //rabbitMQService = moduleRef.get<RabbitMQService>(RabbitMQService);
     config = moduleRef.get<AppConfigService>(AppConfigService);
   });
 
@@ -91,8 +85,8 @@ describe('UserService', () => {
         expect(user.email).toBe(newUser.email);
   
         // Verify notification was sent
-        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledTimes(1);
-        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledWith(
+        expect(mockAmqpConnection.publish).toHaveBeenCalledTimes(1);
+        expect(mockAmqpConnection.publish).toHaveBeenCalledWith(
           config.envConfig.rabbitmq.exchanges.notifications,
           NotificationRoutingKey.EMAIL_VERIFICATION,
           expect.objectContaining({
@@ -102,14 +96,16 @@ describe('UserService', () => {
             data: expect.objectContaining({
               firstName: 'Test',
               verificationUrl: expect.stringContaining('verify-email?token=')
-            })
+            }),
+            priority: NotificationPriority.HIGH,
+            correlationId: expect.any(String),
           })
         );
       });
   
       it('should handle notification failure gracefully', async () => {
         // Mock the publishQueue to fail
-        mockRabbitMQService.publishExchange.mockRejectedValueOnce(new Error('Queue error'));
+        mockAmqpConnection.publish.mockRejectedValueOnce(new Error('Queue error'));
   
         const newUser: NewUser = {
           email,
@@ -131,7 +127,7 @@ describe('UserService', () => {
         expect(user.email).toBe(newUser.email);
 
         // Verify the notification was attempted
-        expect(mockRabbitMQService.publishExchange).toHaveBeenCalledTimes(1);
+        expect(mockAmqpConnection.publish).toHaveBeenCalledTimes(1);
       });
     });
   
