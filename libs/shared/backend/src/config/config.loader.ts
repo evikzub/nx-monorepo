@@ -22,6 +22,10 @@ export const loadConfiguration: ConfigFactory = () => {
       port: parseInt(process.env[ENV_KEYS.API_GATEWAY_PORT] || '3000'),
       host: process.env[ENV_KEYS.API_GATEWAY_HOST] || '',
       timeout: parseInt(process.env[ENV_KEYS.SERVICE_TIMEOUT] || '30000'),
+      cors: {
+        origins: process.env[ENV_KEYS.CORS_ORIGINS]?.split(',') || [],
+        credentials: process.env[ENV_KEYS.CORS_CREDENTIALS] === 'true',
+      },
     },
     userService: {
       id: process.env[ENV_KEYS.USER_SERVICE_ID] || '',

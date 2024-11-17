@@ -1,0 +1,39 @@
+{
+  "name": "public-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/public-portal",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/next:build",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "root": "apps/public-portal",
+        "outputPath": "dist/apps/public-portal"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "serve": {
+      "executor": "@nx/next:server",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "public-portal:build",
+        "dev": true
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "public-portal:build:development",
+          "dev": true
+        },
+        "production": {
+          "buildTarget": "public-portal:build:production",
+          "dev": false
+        }
+      }
+    }
+  }
+}

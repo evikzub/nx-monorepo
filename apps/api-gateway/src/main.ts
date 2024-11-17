@@ -22,11 +22,20 @@ async function bootstrap() {
   // Apply logging interceptor globally
   app.useGlobalInterceptors(new LoggingInterceptor(configService));
   
-  const gatewayConfig = configService.envConfig.apiGateway;
-  await app.listen(gatewayConfig.port, gatewayConfig.host);
+  //const gatewayConfig = configService.envConfig.apiGateway;
+  const { cors, port, host } = configService.envConfig.apiGateway;
+  
+  app.enableCors({
+    origin: cors.origins,
+    credentials: cors.credentials,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  });
+  
+  await app.listen(port, host);
   
   Logger.log(
-    `🚀 API Gateway is running on: http://${gatewayConfig.host}:${gatewayConfig.port}/${globalPrefix}`
+    `🚀 API Gateway is running on: http://${host}:${port}/${globalPrefix}`
   );
 }
 

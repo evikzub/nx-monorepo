@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailService } from './email.service';
-import {
-  AppConfigService,
-} from '@microservices-app/shared/backend';
+import { AppConfigService } from '@microservices-app/shared/backend';
 import {
   NotificationPayload,
   NotificationType,
@@ -38,14 +36,18 @@ describe('EmailService', () => {
         EmailService,
         {
           provide: AppConfigService,
-          useValue: mockConfigService
-        }
+          useValue: mockConfigService,
+        },
       ],
     }).compile();
 
     await module.init();
 
     service = module.get<EmailService>(EmailService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
   it('should render email verification template', async () => {
@@ -81,5 +83,56 @@ describe('EmailService', () => {
     expect(callArg.to).toBe(payload.recipient);
     expect(callArg.html).toContain('Hello John');
     expect(callArg.html).toContain('http://example.com/verify');
+  });
+
+  describe('sendEmail', () => {
+    const testPayload: NotificationPayload = {
+      type: NotificationType.EMAIL_VERIFICATION,
+      recipient: 'test@example.com',
+      templateId: 'email-verification',
+      data: {
+        firstName: 'John',
+        verificationUrl: 'http://example.com/verify',
+      },
+      priority: NotificationPriority.MEDIUM,
+      correlationId: '1234567890',
+    };
+
+    it('should send email with correct template', async () => {
+      // Mock the transporter's sendMail method
+      const sendMailMock = jest
+        .spyOn(service['transporter'], 'sendMail')
+        .mockResolvedValue({ messageId: 'test-id' });
+
+      await service.sendEmail(testPayload);
+
+      expect(sendMailMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          to: testPayload.recipient,
+          subject: expect.any(String),
+          html: expect.stringContaining('Hello John'),
+        })
+      );
+    });
+
+    it('should throw error for invalid template', async () => {
+      const invalidPayload = {
+        ...testPayload,
+        templateId: 'invalid-template',
+      };
+      await expect(service.sendEmail(invalidPayload)).rejects.toThrow(
+        'Template not found'
+      );
+    });
+
+    it('should handle email sending errors', async () => {
+      jest
+        .spyOn(service['transporter'], 'sendMail')
+        .mockRejectedValue(new Error('SMTP error'));
+
+        await expect(service.sendEmail(testPayload))
+        .rejects
+        .toThrow('SMTP error');
+    });
   });
 });

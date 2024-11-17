@@ -29,9 +29,11 @@ export class UserService {
         throw new ConflictException('User with this email already exists');
       }
 
-      // Hash password
-      const hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
-
+      let hashedPassword = null;
+      if (data.password) {
+        // Hash password
+        hashedPassword = await bcrypt.hash(data.password, this.SALT_ROUNDS);
+      }
       // Tracing insert -> Database operation
       const dbSpan = TraceService.startSpan(SpanType.DB_TRANSACTION, {
         operation: 'createUser'

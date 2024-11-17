@@ -7,30 +7,49 @@ export enum UserRole {
   ADMIN = 'admin'
 }
 
-// Base user schemas
-const baseUserSchema = z.object({
-  email: z.string().email(),
-  firstName: z.string().nullable().optional(),
-  lastName: z.string().nullable().optional(),
-});
+const emailSchema = z.string()
+  .email({ message: 'Invalid email address' })
+  .max(255, { message: 'Email must be less than 255 characters'});
+
+function nameSchema(fieldName: string) {
+  return z.string()
+    .min(3, { message: `${fieldName} must be at least 3 characters long` })
+    .max(255, { message: `${fieldName} should be less than 255 characters` })
+    .regex(/^[a-zA-Z]+$/, {message: `${fieldName} should only contain letters`});
+}
+
+const passwordSchema = z.string().min(8).describe('Password must be at least 8 characters long');
 
 const rolesSchema = z.array(z.nativeEnum(UserRole)).default([UserRole.PUBLIC]);
 
+// Base user schemas
+const baseUserSchema = z.object({
+  email: emailSchema,
+  firstName: nameSchema('First name'), //z.string().nullable().optional(),
+  lastName: nameSchema('Last name'), //z.string().nullable().optional(),
+});
+
 // Auth-specific schemas
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1)
+  email: emailSchema,
+  password: passwordSchema
 });
 
 export const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1)
 });
 
-const passwordSchema = z.string().min(8).describe('Password must be at least 8 characters long');
+// export const registerPublicSchema = z.object({
+//   email: emailSchema,
+//   firstName: nameSchema('First name'),
+//   lastName: nameSchema('Last name'),
+//   password: passwordSchema.optional().nullable(), // TODO: Remove optional when password is required
+//   roles: rolesSchema.default([UserRole.PUBLIC])
+// });
 
 export const registerSchema = baseUserSchema.extend({
-  password: passwordSchema,
-  roles: rolesSchema.optional()
+  password: passwordSchema.optional().nullable(), // TODO: Remove optional when password is required
+  roles: rolesSchema.default([UserRole.PUBLIC])
 });
 
 // User management schemas
@@ -54,6 +73,10 @@ export const updateUserRolesSchema = z.object({
 export type RegisterDto = Pick<NewUser, 'email' | 'password' | 'firstName' | 'lastName'> & {
   roles?: UserRole[];
 };
+
+// export type RegisterPublicDto = Pick<NewUser, 'email' | 'firstName' | 'lastName'> & {
+//   roles?: UserRole[];
+// };
 
 export type LoginDto = z.infer<typeof loginSchema>;
 export type RefreshTokenDto = z.infer<typeof refreshTokenSchema>;

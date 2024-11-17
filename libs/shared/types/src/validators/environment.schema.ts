@@ -8,6 +8,15 @@ const serviceConfigSchema = z.object({
   timeout: z.coerce.number().positive(),
 });
 
+const corsConfigSchema = z.object({
+  origins: z.array(z.string()),
+  credentials: z.boolean(),
+});
+
+const apiGatewayConfigSchema = serviceConfigSchema.extend({
+  cors: corsConfigSchema,
+});
+
 const databaseConfigSchema = z.object({
   url: z.string().url(),
   schemaName: z.string().default('public').describe('The name of the schema to use for the database'),
@@ -61,7 +70,7 @@ export const environmentSchema = z.object({
   nodeEnv: z.enum(['development', 'test', 'production']).default('development'),
   database: databaseConfigSchema,
   consul: consulConfigSchema,
-  apiGateway: serviceConfigSchema,
+  apiGateway: apiGatewayConfigSchema,
   userService: serviceConfigSchema,
   jwt: jwtSchema,
   rabbitmq: rabbitmqConfigSchema,

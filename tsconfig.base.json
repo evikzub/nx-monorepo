@@ -15,8 +15,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@microservices-app/shared/backend": ["libs/shared/backend/src/index.ts"],
       "@microservices-app/shared/types": ["libs/shared/types/src/index.ts"],
-      "@microservices-app/shared/backend": ["libs/shared/backend/src/index.ts"]
+      "@microservices-app/ui": ["libs/shared/ui/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

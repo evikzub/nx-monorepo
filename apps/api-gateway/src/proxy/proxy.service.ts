@@ -12,7 +12,7 @@ import {
   ExtendedAxiosRequestConfig,
   ExtendedInternalAxiosRequestConfig,
 } from '../interfaces/axios.interface';
-import { TraceService } from '@microservices-app/shared/backend';
+import { SpanType, TraceService } from '@microservices-app/shared/backend';
 import { CorrelationService } from '@microservices-app/shared/backend';
 
 @Injectable()
@@ -46,21 +46,24 @@ export class ProxyService implements IProxyService {
     const correlationId = CorrelationService.getRequestId();
     const context = CorrelationService.getContext();
 
-    // Add correlation headers
+    // Enhanced headers for service communication
     request.headers = {
-    //const headers = {
+      //const headers = {
       ...request.headers,
       'X-Correlation-ID': correlationId,
       'X-Request-ID': correlationId,
       'X-Source-Service': 'api-gateway',
-      'X-Source-Class': context?.className,
-      'X-Source-Method': context?.methodName
+      'X-Source-Class': context?.className || ProxyService.name,
+      'X-Source-Method': context?.methodName || 'forward',
+      'X-Target-Service': serviceName,
+      'X-Original-Path': path,
     };
 
-    const span = TraceService.startSpan('http_forward', {
+    const span = TraceService.startSpan(SpanType.HTTP_REQUEST, {
       service: serviceName,
       path,
       method: request.method,
+      operation: 'forward',
     });
 
     try {
@@ -68,6 +71,13 @@ export class ProxyService implements IProxyService {
       const instances = await this.discoveryService.getServiceInstances(
         serviceName
       );
+
+      if (!instances.length) {
+        throw new HttpException(
+          `No available instances for service ${serviceName}`,
+          503
+        );
+      }
 
       // Use retry service with load balancer
       const result = await this.retryService.executeWithRetry(
@@ -122,24 +132,38 @@ export class ProxyService implements IProxyService {
     const baseUrl = `http://${instance.host}:${instance.port}`;
     const url = new URL(path, baseUrl).toString();
 
-    this.logger.debug(`Proxying request to: ${url}`, {
+    const requestSpan = TraceService.startSpan(SpanType.HTTP_REQUEST, {
+      url,
       method: request.method,
-      headers: request.headers,
+      service: instance.metadata.service,
     });
 
-    const config: ExtendedAxiosRequestConfig = {
-      method: request.method,
-      url,
-      data: request.body,
-      headers: this.filterHeaders(request.headers),
-      params: request.query,
-      timeout: 5000,
-      metadata: { instance },
-    };
+    try {
+      const config: ExtendedAxiosRequestConfig = {
+        method: request.method,
+        url,
+        data: request.body,
+        headers: this.filterHeaders(request.headers),
+        params: request.query,
+        timeout: 5000,
+        metadata: { instance },
+      };
 
-    const response = await firstValueFrom(this.httpService.request(config));
+      const response = await firstValueFrom(this.httpService.request(config));
 
-    return response.data;
+      TraceService.endSpan(requestSpan, {
+        statusCode: response.status,
+        responseSize: JSON.stringify(response.data).length
+      });
+
+      return response.data;
+    } catch (error) {
+      TraceService.endSpan(requestSpan, {
+        error: error.message,
+        errorCode: error.response?.status || 500,
+      });
+      throw error;
+    }
   }
 
   private filterHeaders(headers: Record<string, string>) {
@@ -148,6 +172,12 @@ export class ProxyService implements IProxyService {
       'content-type',
       'user-agent',
       'x-correlation-id',
+      'x-request-id',
+      'x-source-service',
+      'x-source-class',
+      'x-source-method',
+      'x-target-service',
+      'x-original-path',
     ];
 
     return Object.keys(headers)
