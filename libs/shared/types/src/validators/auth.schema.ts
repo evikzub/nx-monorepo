@@ -70,9 +70,11 @@ export const updateUserRolesSchema = z.object({
 });
 
 // DTOs
-export type RegisterDto = Pick<NewUser, 'email' | 'password' | 'firstName' | 'lastName'> & {
-  roles?: UserRole[];
-};
+// export type RegisterDto = Pick<NewUser, 'email' | 'password' | 'firstName' | 'lastName'> & {
+//   roles?: UserRole[];
+// };
+
+export type RegisterDto = z.infer<typeof registerSchema>;
 
 // export type RegisterPublicDto = Pick<NewUser, 'email' | 'firstName' | 'lastName'> & {
 //   roles?: UserRole[];

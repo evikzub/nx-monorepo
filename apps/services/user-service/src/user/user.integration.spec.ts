@@ -73,8 +73,10 @@ describe('Users Integration', () => {
       .send({
         email: adminEmail,
         password,
+        firstName: 'Admin',
+        lastName: 'User',
         roles: [UserRole.ADMIN]
-      });
+      }).expect(201);
 
     if (response.status === 201) {
       adminToken = response.body.accessToken;
@@ -120,6 +122,8 @@ describe('Users Integration', () => {
         .send({
           email,
           password,
+          firstName: 'Test',
+          lastName: 'User',
           roles: [UserRole.PUBLIC]
         });
 
@@ -136,6 +140,7 @@ describe('Users Integration', () => {
         password,
         firstName: 'Test',
         lastName: 'User',
+        roles: [UserRole.ADMIN]
       };
 
       await request(app.getHttpServer())
@@ -176,7 +181,9 @@ describe('Users Integration', () => {
         .send({
           email: publicEmail,
           password,
-        });
+          firstName: 'Test',
+          lastName: 'User',
+        }).expect(201);
 
       await request(app.getHttpServer())
         .post('/users')

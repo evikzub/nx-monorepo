@@ -31,10 +31,12 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
     try {
       await onSubmit(data)
     } catch (error) {
+      console.error(error)
       toast({
         variant: 'destructive',
         title: 'Error',
         description: error instanceof Error ? error.message : 'Registration failed',
+        duration: 5000,
       })
     }
   }
@@ -42,9 +44,9 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
   return (
     <Card className="w-[400px]">
       <CardHeader>
-        <CardTitle>Create Account</CardTitle>
+        <CardTitle>Create Profile</CardTitle>
         <CardDescription>
-          Enter your details to create a new account
+          Enter your details to get started
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -55,7 +57,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>First Name *</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -68,7 +70,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>Last Name *</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -81,7 +83,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Email *</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -100,7 +102,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
               className="w-full" 
               disabled={loading || form.formState.isSubmitting}
             >
-              {loading ? 'Creating account...' : 'Create account'}
+              {loading ? 'Submitting...' : 'START NOW >'}
             </Button>
           </CardFooter>
         </form>

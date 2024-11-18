@@ -1,31 +1,37 @@
 'use client';
 
 import { useState } from 'react';
-import { useProfileStore } from '@/store/profile/slice';
-import { ProfileService } from '@/services/profile/service';
+//import { useProfileStore } from '@/store/profile/slice';
+//import { ProfileService } from '@/services/profile/service';
 import { ProfileStep } from '@/types/profile';
-import { PersonalInfoForm } from './PersonalInfoForm';
+import { PersonalInfoForm } from './personal-info-form';
 import { PreferencesForm } from './PreferencesForm';
 import { QuizForm } from './QuizForm';
 
 const steps: ProfileStep[] = ['personal', 'preferences', 'quiz'];
 
-export function ProfileForm() {
-  const { profile, currentStep, setCurrentStep, updateProfile } = useProfileStore();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+interface ProfileFormProps {
+  onStepComplete: (step: ProfileStep, data: any) => Promise<void>
+  initialStep?: ProfileStep
+}
+
+export function ProfileForm({ onStepComplete, initialStep = 'personal' }: ProfileFormProps) {
+  const [currentStep, setCurrentStep] = useState<ProfileStep>(initialStep)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const handleSubmit = async (data: any) => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const updatedProfile = await ProfileService.updateProfile({
-        ...profile,
-        ...data,
-      });
+      // const updatedProfile = await ProfileService.updateProfile({
+      //   ...profile,
+      //   ...data,
+      // });
       
-      updateProfile(updatedProfile);
+      //updateProfile(updatedProfile);
+      await onStepComplete(currentStep, data)
       
       if (currentStep !== steps[steps.length - 1]) {
         const nextStep = steps[steps.indexOf(currentStep) + 1];

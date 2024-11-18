@@ -3,23 +3,15 @@
 import { RegistrationForm } from '@entrepreneur/shared/ui'
 import { useRouter } from 'next/navigation'
 import { AuthService } from '@/services/auth/service'
+import { RegisterDto } from '@entrepreneur/shared/types'
 
 export default function RegisterPage() {
   const router = useRouter()
 
-  const handleRegister = async (data: {
-    firstName: string
-    lastName: string
-    email: string
-  }) => {
-    try {
-      await AuthService.register(data)
-      // Redirect to success page or login
-      router.push('/register/success')
-    } catch (error) {
-      // Error handling is done in the form component
-      throw error
-    }
+  const handleRegister = async (data: RegisterDto) => {
+    await AuthService.register(data)
+    // Redirect to profile form
+    router.push('/profile')
   }
 
   return (

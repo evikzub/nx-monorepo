@@ -366,7 +366,7 @@ describe('Auth Integration', () => {
           .post('/auth/register')
           .send({
             email: newUserEmail,
-            password: 'password123',
+            //password: 'password123',
             firstName: 'New',
             lastName: 'User'
           })
@@ -386,15 +386,20 @@ describe('Auth Integration', () => {
           .post('/auth/register')
           .send({
             email: newUserEmail,
-            password: 'password123'
-          });
+            password: 'password123',
+            firstName: 'New',
+            lastName: 'User'
+          })
+          .expect(201);
 
         // Duplicate registration
         return request(app.getHttpServer())
           .post('/auth/register')
           .send({
             email: newUserEmail,
-            password: 'different123'
+            password: 'different123',
+            firstName: 'New',
+            lastName: 'User'
           })
           .expect(409)
           .expect(res => {

@@ -1,0 +1,42 @@
+{
+  "questions": [
+    {
+      "id": "q1",
+      "text": "What is your primary goal as an entrepreneur?",
+      "type": "single",
+      "options": [
+        {
+          "id": "q1_a1",
+          "text": "Start a new business"
+        },
+        {
+          "id": "q1_a2",
+          "text": "Scale existing business"
+        },
+        {
+          "id": "q1_a3",
+          "text": "Explore business opportunities"
+        }
+      ]
+    },
+    {
+      "id": "q2",
+      "type": "multiple",
+      "text": "Which areas are you most interested in?",
+      "options": [
+        {
+          "id": "q2_a1",
+          "text": "Technology"
+        },
+        {
+          "id": "q2_a2",
+          "text": "E-commerce"
+        },
+        {
+          "id": "q2_a3",
+          "text": "Services"
+        }
+      ]
+    }
+  ]
+} 
