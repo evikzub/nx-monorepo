@@ -2,16 +2,22 @@
 
 import { RegistrationForm } from '@entrepreneur/shared/ui'
 import { useRouter } from 'next/navigation'
-import { AuthService } from '@/services/auth/service'
-import { RegisterDto } from '@entrepreneur/shared/types'
+import { AssessmentRegisterDto } from '@entrepreneur/shared/types'
+import { AssessmentService } from '@/services/assessment/service'
+import { useAssessmentStore } from '@/store/assessment/slice'
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { setAssessment } = useAssessmentStore()
 
-  const handleRegister = async (data: RegisterDto) => {
-    await AuthService.register(data)
-    // Redirect to profile form
-    router.push('/profile')
+  const handleRegister = async (data: AssessmentRegisterDto) => {
+    const assessment = await AssessmentService.register(data)
+    //console.log("assessment: ", assessment)
+    if (assessment) {
+      setAssessment(assessment, 'assessment.token')
+      // Redirect to profile form
+      router.push('/profile')
+    }
   }
 
   return (

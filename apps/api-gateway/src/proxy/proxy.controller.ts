@@ -2,7 +2,7 @@ import { Controller, All, Req, UseGuards, Logger } from '@nestjs/common';
 import { Request } from 'express';
 import { ProxyService } from './proxy.service';
 import { AppConfigService, Roles, JwtAuthGuard, RolesGuard, TraceService } from '@microservices-app/shared/backend';
-import { UserRole } from '@microservices-app/shared/types';
+import { ServiceConfig, UserRole } from '@microservices-app/shared/types';
 
 @Controller()
 export class ProxyController {
@@ -16,7 +16,7 @@ export class ProxyController {
   @All(['auth/login', 'auth/register', 'auth/refresh'])
   async publicAuthEndpoints(@Req() request: Request) {
     this.logger.debug(`Handling public auth request: ${request.method} ${request.url}`);
-    return this.forwardToUserService(request);
+    return this.forwardToService(request, this.config.envConfig.userService);
   }
 
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,15 +24,21 @@ export class ProxyController {
   @All(['users', 'users/*'])
   async protectedUserEndpoints(@Req() request: Request) {
     this.logger.debug(`Handling protected user request: ${request.method} ${request.url}`);
-    return this.forwardToUserService(request);
+    return this.forwardToService(request, this.config.envConfig.userService);
   }
 
-  private async forwardToUserService(request: Request) {
-    const serviceConfig = this.config.envConfig.userService;
+  @All(['assessments', 'assessments/*'])
+  async assessmentEndpoints(@Req() request: Request) {
+    this.logger.debug(`Handling assessment request: ${request.method} ${request.url}`);
+    return this.forwardToService(request, this.config.envConfig.assessmentService);
+  }
+
+  private async forwardToService(request: Request, serviceConfig: ServiceConfig) {
+    //const serviceConfig = this.config.envConfig.userService;
     const targetUrl = request.url;
     
     this.logger.debug({
-      message: 'Forwarding request to user service',
+      message: `Forwarding request to ${serviceConfig.name} service`,
       method: request.method,
       originalUrl: request.originalUrl,
       targetUrl,

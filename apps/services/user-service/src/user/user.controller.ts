@@ -22,7 +22,7 @@ import {
   updateUserSchema 
 } from '@microservices-app/shared/types';
 import { TransformInterceptor } from '../interceptors/transform.interceptor';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
+import { ZodValidationPipe } from '@microservices-app/shared/backend';
 import { JwtAuthGuard, RolesGuard, Roles } from '@microservices-app/shared/backend';
 import { UserRole } from '@microservices-app/shared/types';
 

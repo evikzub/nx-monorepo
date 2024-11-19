@@ -1,0 +1,21 @@
+### Register assessment
+POST http://localhost:3004/api/assessments
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "firstName": "John",
+    "lastName": "Doe"
+}
+
+### Update assessment profile
+@id = ba155cef-f851-4604-ad92-48b1b715beae
+PUT http://localhost:3004/api/assessments/{{id}}/profile
+Content-Type: application/json
+
+{
+  "gender": "male",
+  "country": "Brazil"
+  //"state": "São Paulo",
+  //"zipCode": "01001-000"
+}

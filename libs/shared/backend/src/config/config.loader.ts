@@ -73,6 +73,13 @@ export const loadConfiguration: ConfigFactory = () => {
     //   retryAttempts: 5, //parseInt(process.env[ENV_KEYS.NOTIFICATION_RETRY_ATTEMPTS] || '5'),
     //   retryDelay: 1000, //parseInt(process.env[ENV_KEYS.NOTIFICATION_RETRY_DELAY] || '1000'),
     },
+    assessmentService: {
+      id: process.env[ENV_KEYS.ASSESSMENT_SERVICE_ID] || '',
+      name: process.env[ENV_KEYS.ASSESSMENT_SERVICE_NAME] || '',
+      port: parseInt(process.env[ENV_KEYS.ASSESSMENT_SERVICE_PORT] || '3004'),
+      host: process.env[ENV_KEYS.ASSESSMENT_SERVICE_HOST] || '',
+      timeout: parseInt(process.env[ENV_KEYS.SERVICE_TIMEOUT] || '30000'),
+    },
   };
 
   const result = environmentSchema.safeParse(config);

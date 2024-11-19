@@ -1,4 +1,4 @@
-export type ProfileStep = 'personal' | 'preferences' | 'quiz';
+export type ProfileStep = 'personal' | 'motives'; // | 'quiz';
 
 // export interface Profile {
 //   id: string;

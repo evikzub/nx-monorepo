@@ -1,3 +1,15 @@
+### Register public
+POST http://localhost:3011/api/auth/register
+Content-Type: application/json
+
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe.public@example.com",
+    //"password": "password",
+    "roles": ["public"]
+}
+
 ### Login
 # @name login
 POST http://localhost:3010/api/auth/login
@@ -14,3 +26,12 @@ Content-Type: application/json
 GET http://localhost:3010/api/users
 Authorization: Bearer {{token}}
 
+### Register assessment
+POST http://localhost:3010/api/assessments
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "firstName": "John",
+    "lastName": "Doe"
+}

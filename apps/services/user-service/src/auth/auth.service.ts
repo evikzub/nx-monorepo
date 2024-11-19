@@ -8,7 +8,8 @@ import {
   JwtPayload,
   AuthErrorCode,
   UserRole,
-  RefreshTokenDto
+  RefreshTokenDto,
+  NewUser
 } from '@microservices-app/shared/types';
 import * as bcrypt from 'bcrypt';
 
@@ -153,7 +154,7 @@ export class AuthService {
       const user = await this.userService.createUser({
         ...registerDto,
         roles: registerDto.roles || [UserRole.PUBLIC]
-      });
+      } as NewUser);
 
       const payload: Omit<JwtPayload, 'type'> = {
         sub: user.id,

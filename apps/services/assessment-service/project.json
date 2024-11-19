@@ -1,0 +1,26 @@
+{
+  "name": "assessment-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/services/assessment-service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "assessment-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "assessment-service:build:development"
+        },
+        "production": {
+          "buildTarget": "assessment-service:build:production"
+        }
+      }
+    }
+  }
+}

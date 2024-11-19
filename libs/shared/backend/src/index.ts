@@ -28,3 +28,7 @@ export * from './auth/strategies/jwt.strategy';
 export * from './auth/auth.module';
 // RabbitMQ
 export * from './rabbitmq/rabbitmq.module';
+// Pipes
+export * from './pipes/zod-validation.pipe';
+// Consul
+export * from './consul/consul.service';

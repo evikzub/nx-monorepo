@@ -72,6 +72,7 @@ export const environmentSchema = z.object({
   consul: consulConfigSchema,
   apiGateway: apiGatewayConfigSchema,
   userService: serviceConfigSchema,
+  assessmentService: serviceConfigSchema,
   jwt: jwtSchema,
   rabbitmq: rabbitmqConfigSchema,
   emailService: emailServiceSchema,

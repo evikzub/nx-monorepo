@@ -19,8 +19,7 @@ import {
   registerSchema,
   refreshTokenSchema
 } from '@microservices-app/shared/types';
-import { ZodValidationPipe } from '../pipes/zod-validation.pipe';
-import { JwtAuthGuard } from '@microservices-app/shared/backend';
+import { JwtAuthGuard, ZodValidationPipe } from '@microservices-app/shared/backend';
 
 @Controller('auth')
 export class AuthController {

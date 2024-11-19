@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { NewUser } from '../database/schema';
+//import type { NewUser } from '../database/schema';
 
 export enum UserRole {
   PUBLIC = 'public',

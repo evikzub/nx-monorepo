@@ -1,6 +1,6 @@
 'use client'
 
-import { registerSchema, type RegisterDto } from '@entrepreneur/shared/types'
+import { AssessmentRegisterDto, assessmentSchema, registerSchema, type RegisterDto } from '@entrepreneur/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod';
 //import { useState } from 'react'
 import { Button } from '../ui/button'
@@ -18,8 +18,8 @@ interface RegistrationFormProps {
 
 export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
   const { toast } = useToast()
-  const form = useForm<RegisterDto>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<AssessmentRegisterDto>({
+    resolver: zodResolver(assessmentSchema),
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -31,7 +31,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
     try {
       await onSubmit(data)
     } catch (error) {
-      console.error(error)
+      //console.error(error)
       toast({
         variant: 'destructive',
         title: 'Error',
