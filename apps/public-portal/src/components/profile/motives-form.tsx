@@ -31,9 +31,8 @@ export function MotivesForm({ onSubmit, isLoading }: PreferencesFormProps) {
   }
 
   const reorderData = (initData: QuestionsProps[], profile: ValuesProps | undefined) => {
-    console.log("assessment vaues: ", assessment)
     if (!profile) return initData;
-    console.log("profile in motives form: ", profile)
+
     return initData.map(question => {
       // Get the corresponding answers for the question id in the profile
       const profileAnswers = profile[question.id]?.answers || [];

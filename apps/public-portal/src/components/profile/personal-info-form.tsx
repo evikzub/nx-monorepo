@@ -4,7 +4,6 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, RadioGroup, RadioGroupItem, Label } from '@entrepreneur/shared/ui'
 import { useToast } from '@entrepreneur/shared/ui'
-import { type PersonalInfoData } from '@/types/profile'
 import { ProfileProps } from '@entrepreneur/shared/types'
 import { ProfileSchema } from '@entrepreneur/shared/types'
 import { useAssessmentStore } from '@/store/assessment/slice'
@@ -46,10 +45,10 @@ export function PersonalInfoForm({ onSubmit: { value: onSubmit }, isLoading }: P
       defaultValues: assessment?.data?.profile || defaultValues,
   })
 
-  const handleSubmit = async (data: PersonalInfoData) => {
+  const handleSubmit = async (data: ProfileProps) => {
     try {
       //console.log("data in profile form: ", data)
-      await onSubmit(data as ProfileProps)
+      await onSubmit(data)
     } catch (error) {
       toast({
         variant: 'destructive',

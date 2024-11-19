@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import { AssessmentDto, AssessmentRegisterDto, AssessmentResponseDto, ProfileProps, ValuesProps } from '@entrepreneur/shared/types';
+import { AssessmentRegisterDto, AssessmentResponseDto, ProfileProps, ValuesProps } from '@entrepreneur/shared/types';
 
 export class AssessmentService {
   static async register(data: AssessmentRegisterDto): Promise<AssessmentResponseDto> {
