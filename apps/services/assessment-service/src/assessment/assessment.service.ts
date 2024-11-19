@@ -54,7 +54,7 @@ export class AssessmentService {
       assessmentData.profile = {...assessmentData.profile, ...data};
     }
     else {
-      assessment.data = {profile: data};
+      assessment.data = { profile: data};
     }
     this.logger.log("Updated Assessment: ", assessment);
 
@@ -66,7 +66,18 @@ export class AssessmentService {
   async updateDataMotives(id: string, data: ValuesProps): Promise<Assessment> {
     const assessment = await this.findAssessment(id);
     const parsedAssessment = parseAssessmentData(assessment);
-    parsedAssessment.data.results.motives.values = data;
+    if (parsedAssessment.data?.results?.motives?.values) {
+      parsedAssessment.data.results.motives.values = {...parsedAssessment.data.results.motives.values, ...data};
+    }
+    else {
+      console.log("data in motives service: ...")
+      if (parsedAssessment.data?.results?.motives) {
+        parsedAssessment.data = {...parsedAssessment.data, results: {...parsedAssessment.data.results, motives: {...parsedAssessment.data.results.motives, values: data}}};
+      }
+      else {
+        parsedAssessment.data = {...parsedAssessment.data, results: {motives: {values: data}}};
+      }
+    }
 
     const updatedAssessment = await this.assessmentRepository.update(id, parsedAssessment);
     return updatedAssessment;

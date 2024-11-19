@@ -2,25 +2,29 @@
 
 import { useState } from 'react';
 import { ProfileStep } from '@/types/profile';
-import { OtpVerificationForm } from '../auth/otp-verification-form';
+//import { OtpVerificationForm } from '../auth/otp-verification-form';
 import { PersonalInfoForm } from './personal-info-form';
-import { PreferencesForm } from './motives-form';
-import { QuizForm } from './QuizForm';
+import { MotivesForm } from './motives-form';
+import { ProfileProps } from '@entrepreneur/shared/types';
+import { ValuesProps } from '@entrepreneur/shared/types';
 
 const steps: ProfileStep[] = ['personal', 'motives'];
 
 interface ProfileFormProps {
   //email: string;
-  onStepComplete: (step: ProfileStep, data: any) => Promise<void>;
+  onStepComplete: {
+    type: 'function',
+    value: (step: ProfileStep, data: ProfileProps | ValuesProps) => Promise<void>
+  }
   initialStep?: ProfileStep;
 }
 
-export function ProfileForm({ onStepComplete, initialStep = 'personal' }: ProfileFormProps) {
+export function ProfileForm({ onStepComplete: { value: onStepComplete }, initialStep = 'personal' }: ProfileFormProps) {
   const [currentStep, setCurrentStep] = useState<ProfileStep>(initialStep);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data: ProfileProps | ValuesProps) => {
     try {
       setIsLoading(true);
       setError(null);
@@ -38,17 +42,17 @@ export function ProfileForm({ onStepComplete, initialStep = 'personal' }: Profil
     }
   };
 
-  const handleResendOtp = async (email: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      //await onStepComplete('otp', { email, resend: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to resend code');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const handleResendOtp = async (email: string) => {
+  //   try {
+  //     setIsLoading(true);
+  //     setError(null);
+  //     //await onStepComplete('otp', { email, resend: true });
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : 'Failed to resend code');
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <div className="space-y-6">
@@ -68,7 +72,14 @@ export function ProfileForm({ onStepComplete, initialStep = 'personal' }: Profil
       )} */}
       
       {currentStep === 'personal' && (
-        <PersonalInfoForm onSubmit={handleSubmit} isLoading={isLoading} />
+        // <PersonalInfoForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <PersonalInfoForm   
+          onSubmit={{
+            type: 'function',
+            value: handleSubmit
+          }} 
+          isLoading={isLoading} 
+        />
       )}
       
       {/* {currentStep === 'preferences' && (
@@ -76,7 +87,7 @@ export function ProfileForm({ onStepComplete, initialStep = 'personal' }: Profil
       )} */}
       
       {currentStep === 'motives' && (
-        <QuizForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <MotivesForm onSubmit={handleSubmit} isLoading={isLoading} />
       )}
     </div>
   );

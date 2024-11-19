@@ -1,6 +1,6 @@
 'use client'
 
-import { AssessmentRegisterDto, assessmentSchema, registerSchema, type RegisterDto } from '@entrepreneur/shared/types'
+import { AssessmentRegisterDto, assessmentSchema, type RegisterDto } from '@entrepreneur/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod';
 //import { useState } from 'react'
 import { Button } from '../ui/button'
@@ -8,15 +8,19 @@ import { Input } from '../ui/input'
 //import { Label } from '../ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { useToast } from '../ui/use-toast'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 
 interface RegistrationFormProps {
-  onSubmit: (data: RegisterDto) => Promise<void>
+  //onSubmit: (data: RegisterDto) => Promise<void>
+  onSubmit: {
+    type: 'function',
+    value: (data: AssessmentRegisterDto) => Promise<void>
+  }
   loading?: boolean
 }
 
-export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
+export function RegistrationForm({ onSubmit: { value: onSubmit }, loading }: RegistrationFormProps) {
   const { toast } = useToast()
   const form = useForm<AssessmentRegisterDto>({
     resolver: zodResolver(assessmentSchema),
@@ -50,7 +54,7 @@ export function RegistrationForm({ onSubmit, loading }: RegistrationFormProps) {
         </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={form.handleSubmit(handleSubmit as SubmitHandler<AssessmentRegisterDto>)}>
           <CardContent className="space-y-4">
             <FormField
               control={form.control}

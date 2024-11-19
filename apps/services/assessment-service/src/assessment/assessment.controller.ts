@@ -50,7 +50,7 @@ export class AssessmentController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body(new ZodValidationPipe(ValuesSchema)) values: ValuesProps
   ) {
-    return this.assessmentService.updateProfile(id, values);
+    return this.assessmentService.updateDataMotives(id, values);
   }
 
   // @Put(':id/preferences')

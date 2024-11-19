@@ -1,0 +1,623 @@
+[
+  {
+      "id": 1,
+      "title": "In business which is most like you?",
+      "group": 1,
+      "answers": [
+          {
+              "id": 1,
+              "name": "Innovative",
+              "categoryId": 3
+          },
+          {
+              "id": 2,
+              "name": "Accomplished",
+              "categoryId": 4
+          },
+          {
+              "id": 3,
+              "name": "Composed",
+              "categoryId": 2
+          },
+          {
+              "id": 4,
+              "name": "Dependable",
+              "categoryId": 1
+          }
+      ]
+  },
+  {
+      "id": 2,
+      "title": "In business which is most like you?",
+      "group": 1,
+      "answers": [
+          {
+              "id": 5,
+              "name": "Cause Driven",
+              "categoryId": 4
+          },
+          {
+              "id": 6,
+              "name": "Results Driven",
+              "categoryId": 2
+          },
+          {
+              "id": 7,
+              "name": "People Driven",
+              "categoryId": 1
+          },
+          {
+              "id": 8,
+              "name": "Challenge Driven",
+              "categoryId": 3
+          }
+      ]
+  },
+  {
+      "id": 3,
+      "title": "In business which is most like you?",
+      "group": 1,
+      "answers": [
+          {
+              "id": 9,
+              "name": "Decisive",
+              "categoryId": 2
+          },
+          {
+              "id": 10,
+              "name": "Supportive",
+              "categoryId": 1
+          },
+          {
+              "id": 11,
+              "name": "Competitive",
+              "categoryId": 3
+          },
+          {
+              "id": 12,
+              "name": "Inquisitive",
+              "categoryId": 4
+          }
+      ]
+  },
+  {
+      "id": 4,
+      "title": "In business which is most like you?",
+      "group": 1,
+      "answers": [
+          {
+              "id": 14,
+              "name": "Conventional",
+              "categoryId": 1
+          },
+          {
+              "id": 13,
+              "name": "Like Change",
+              "categoryId": 3
+          },
+          {
+              "id": 16,
+              "name": "Intellectual",
+              "categoryId": 4
+          },
+          {
+              "id": 15,
+              "name": "Unique",
+              "categoryId": 2
+          }
+      ]
+  },
+  {
+      "id": 5,
+      "title": "In business which is most like you?",
+      "group": 2,
+      "answers": [
+          {
+              "id": 17,
+              "name": "Consistent",
+              "categoryId": 1
+          },
+          {
+              "id": 18,
+              "name": "Confident",
+              "categoryId": 3
+          },
+          {
+              "id": 19,
+              "name": "Cultured",
+              "categoryId": 4
+          },
+          {
+              "id": 20,
+              "name": "Controlling",
+              "categoryId": 2
+          }
+      ]
+  },
+  {
+      "id": 6,
+      "title": "In business which is most like you?",
+      "group": 2,
+      "answers": [
+          {
+              "id": 21,
+              "name": "Challenger",
+              "categoryId": 3
+          },
+          {
+              "id": 24,
+              "name": "Contributor",
+              "categoryId": 4
+          },
+          {
+              "id": 22,
+              "name": "Builder",
+              "categoryId": 2
+          },
+          {
+              "id": 23,
+              "name": "Protector",
+              "categoryId": 1
+          }
+      ]
+  },
+  {
+      "id": 7,
+      "title": "In business what are you most driven by?",
+      "group": 2,
+      "answers": [
+          {
+              "id": 27,
+              "name": "Pursuit of Knowledge",
+              "categoryId": 4
+          },
+          {
+              "id": 28,
+              "name": "Achieving a Result",
+              "categoryId": 2
+          },
+          {
+              "id": 26,
+              "name": "Need for Security",
+              "categoryId": 1
+          },
+          {
+              "id": 25,
+              "name": "Desire for Freedom",
+              "categoryId": 3
+          }
+      ]
+  },
+  {
+      "id": 8,
+      "title": "In business what are you most driven by?",
+      "group": 2,
+      "answers": [
+          {
+              "id": 32,
+              "name": "Being in Control",
+              "categoryId": 2
+          },
+          {
+              "id": 30,
+              "name": "Fulfilling Responsibilities",
+              "categoryId": 1
+          },
+          {
+              "id": 31,
+              "name": "Being Successful",
+              "categoryId": 3
+          },
+          {
+              "id": 29,
+              "name": "Having an Impact",
+              "categoryId": 4
+          }
+      ]
+  },
+  {
+      "id": 9,
+      "title": "In business what are you most driven by?",
+      "group": 3,
+      "answers": [
+          {
+              "id": 35,
+              "name": "Mastery",
+              "categoryId": 4
+          },
+          {
+              "id": 34,
+              "name": "Power",
+              "categoryId": 2
+          },
+          {
+              "id": 36,
+              "name": "Commitment",
+              "categoryId": 1
+          },
+          {
+              "id": 33,
+              "name": "Acknowledgement",
+              "categoryId": 3
+          }
+      ]
+  },
+  {
+      "id": 10,
+      "title": "In business which is worse?",
+      "group": 3,
+      "answers": [
+          {
+              "id": 39,
+              "name": "Indecision",
+              "categoryId": 2
+          },
+          {
+              "id": 37,
+              "name": "Irresponsibility",
+              "categoryId": 1
+          },
+          {
+              "id": 38,
+              "name": "Incompetence",
+              "categoryId": 3
+          },
+          {
+              "id": 40,
+              "name": "Ignorance",
+              "categoryId": 4
+          }
+      ]
+  },
+  {
+      "id": 11,
+      "title": "In business which is worse?",
+      "group": 3,
+      "answers": [
+          {
+              "id": 42,
+              "name": "Being separated from<BR> loved ones",
+              "categoryId": 1
+          },
+          {
+              "id": 44,
+              "name": "Being embarrassed",
+              "categoryId": 3
+          },
+          {
+              "id": 43,
+              "name": "Being manipulated",
+              "categoryId": 4
+          },
+          {
+              "id": 41,
+              "name": "Not being the best",
+              "categoryId": 2
+          }
+      ]
+  },
+  {
+      "id": 12,
+      "title": "In business which is worse?",
+      "group": 3,
+      "answers": [
+          {
+              "id": 45,
+              "name": "Being Bored",
+              "categoryId": 3
+          },
+          {
+              "id": 46,
+              "name": "Not making a difference",
+              "categoryId": 4
+          },
+          {
+              "id": 48,
+              "name": "Not being respected",
+              "categoryId": 2
+          },
+          {
+              "id": 47,
+              "name": "Being left out",
+              "categoryId": 1
+          }
+      ]
+  },
+  {
+      "id": 13,
+      "title": "In business which is more important to you?",
+      "group": 4,
+      "answers": [
+          {
+              "id": 51,
+              "name": "Achievement",
+              "categoryId": 2
+          },
+          {
+              "id": 50,
+              "name": "Honesty",
+              "categoryId": 1
+          },
+          {
+              "id": 49,
+              "name": "Prestige",
+              "categoryId": 3
+          },
+          {
+              "id": 52,
+              "name": "Effectiveness",
+              "categoryId": 4
+          }
+      ]
+  },
+  {
+      "id": 14,
+      "title": "In business which is more important to you?",
+      "group": 4,
+      "answers": [
+          {
+              "id": 55,
+              "name": "Loyalty",
+              "categoryId": 1
+          },
+          {
+              "id": 53,
+              "name": "Flexibility",
+              "categoryId": 3
+          },
+          {
+              "id": 56,
+              "name": "Simplicity",
+              "categoryId": 4
+          },
+          {
+              "id": 54,
+              "name": "Respect",
+              "categoryId": 2
+          }
+      ]
+  },
+  {
+      "id": 15,
+      "title": "In business which is more important to you?",
+      "group": 4,
+      "answers": [
+          {
+              "id": 57,
+              "name": "Success",
+              "categoryId": 3
+          },
+          {
+              "id": 58,
+              "name": "Contribution",
+              "categoryId": 4
+          },
+          {
+              "id": 59,
+              "name": "Quality",
+              "categoryId": 2
+          },
+          {
+              "id": 60,
+              "name": "Team",
+              "categoryId": 1
+          }
+      ]
+  },
+  {
+      "id": 16,
+      "title": "In business which is more important to you?",
+      "group": 4,
+      "answers": [
+          {
+              "id": 64,
+              "name": "Self Expression",
+              "categoryId": 4
+          },
+          {
+              "id": 63,
+              "name": "Control",
+              "categoryId": 2
+          },
+          {
+              "id": 62,
+              "name": "Relationship",
+              "categoryId": 1
+          },
+          {
+              "id": 61,
+              "name": "Challenge",
+              "categoryId": 3
+          }
+      ]
+  },
+  {
+      "id": 17,
+      "title": "In business which is more important to you?",
+      "group": 5,
+      "answers": [
+          {
+              "id": 65,
+              "name": "Dependability",
+              "categoryId": 1
+          },
+          {
+              "id": 66,
+              "name": "Growth",
+              "categoryId": 2
+          },
+          {
+              "id": 68,
+              "name": "Independence",
+              "categoryId": 3
+          },
+          {
+              "id": 67,
+              "name": "Knowledge",
+              "categoryId": 4
+          }
+      ]
+  },
+  {
+      "id": 18,
+      "title": "In business which is more important to you?",
+      "group": 5,
+      "answers": [
+          {
+              "id": 69,
+              "name": "Results",
+              "categoryId": 2
+          },
+          {
+              "id": 70,
+              "name": "Recognition",
+              "categoryId": 3
+          },
+          {
+              "id": 72,
+              "name": "Satisfaction",
+              "categoryId": 4
+          },
+          {
+              "id": 71,
+              "name": "Security",
+              "categoryId": 1
+          }
+      ]
+  },
+  {
+      "id": 19,
+      "title": "In business which do you need the most?",
+      "group": 5,
+      "answers": [
+          {
+              "id": 74,
+              "name": "Flexibility to innovate",
+              "categoryId": 3
+          },
+          {
+              "id": 76,
+              "name": "To make a difference",
+              "categoryId": 4
+          },
+          {
+              "id": 73,
+              "name": "Proven systems",
+              "categoryId": 1
+          },
+          {
+              "id": 75,
+              "name": "Ability to drive results",
+              "categoryId": 2
+          }
+      ]
+  },
+  {
+      "id": 20,
+      "title": "In business which do you need the most?",
+      "group": 5,
+      "answers": [
+          {
+              "id": 80,
+              "name": "Cause Based Products/Services",
+              "categoryId": 4
+          },
+          {
+              "id": 79,
+              "name": "Useful<br>Products/Services",
+              "categoryId": 1
+          },
+          {
+              "id": 78,
+              "name": "Quality<br>Products/Services",
+              "categoryId": 2
+          },
+          {
+              "id": 77,
+              "name": "Progressive Products/Services",
+              "categoryId": 3
+          }
+      ]
+  },
+  {
+      "id": 205,
+      "title": "In business, a person is supposed to:",
+      "group": 6,
+      "answers": [
+          {
+              "id": 204,
+              "name": "Follow the rules as I would",
+              "categoryId": 62
+          },
+          {
+              "id": 205,
+              "name": "Do what is generally expected",
+              "categoryId": 59
+          },
+          {
+              "id": 206,
+              "name": "Do it by their own rules",
+              "categoryId": 60
+          },
+          {
+              "id": 207,
+              "name": "Do what is appropriate at the time",
+              "categoryId": 61
+          }
+      ]
+  },
+  {
+      "id": 209,
+      "title": "In business, I communicate best:",
+      "group": 6,
+      "answers": [
+          {
+              "id": 214,
+              "name": "Through seeing and showing",
+              "categoryId": 68
+          },
+          {
+              "id": 215,
+              "name": "Through talking and listening",
+              "categoryId": 69
+          },
+          {
+              "id": 216,
+              "name": "Through feelings and doing",
+              "categoryId": 71
+          },
+          {
+              "id": 217,
+              "name": "Through internal thinking and processing",
+              "categoryId": 70
+          }
+      ]
+  },
+  {
+      "id": 210,
+      "title": "In business, the best rules of conduct would be:",
+      "group": 6,
+      "answers": [
+          {
+              "id": 218,
+              "name": "Tailored for each person",
+              "categoryId": 61
+          },
+          {
+              "id": 219,
+              "name": "Clearly defined",
+              "categoryId": 62
+          },
+          {
+              "id": 220,
+              "name": "Normal conduct",
+              "categoryId": 59
+          },
+          {
+              "id": 221,
+              "name": "Non-existent",
+              "categoryId": 60
+          }
+      ]
+  }
+]

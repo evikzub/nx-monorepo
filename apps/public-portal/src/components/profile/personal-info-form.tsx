@@ -1,6 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, RadioGroup, RadioGroupItem, Label } from '@entrepreneur/shared/ui'
 import { useToast } from '@entrepreneur/shared/ui'
@@ -10,7 +10,10 @@ import { ProfileSchema } from '@entrepreneur/shared/types'
 import { useAssessmentStore } from '@/store/assessment/slice'
 
 interface PersonalInfoFormProps {
-  onSubmit: (data: ProfileProps) => Promise<void>
+  onSubmit: {
+    type: 'function',
+    value: (data: ProfileProps) => Promise<void>
+  }
   isLoading?: boolean
 }
 
@@ -34,11 +37,10 @@ const defaultValues = Object.keys(fieldData).reduce((acc: Record<string, string 
   return acc;
 }, {});
 
-export function PersonalInfoForm({ onSubmit, isLoading }: PersonalInfoFormProps) {
+export function PersonalInfoForm({ onSubmit: { value: onSubmit }, isLoading }: PersonalInfoFormProps) {
   const { toast } = useToast()
   const { assessment } = useAssessmentStore()
 
-  //console.log("assessment in profile form: ", assessment)
   const form = useForm<ProfileProps>({
       resolver: zodResolver(ProfileSchema),
       defaultValues: assessment?.data?.profile || defaultValues,
@@ -46,7 +48,7 @@ export function PersonalInfoForm({ onSubmit, isLoading }: PersonalInfoFormProps)
 
   const handleSubmit = async (data: PersonalInfoData) => {
     try {
-      console.log("data in profile form: ", data)
+      //console.log("data in profile form: ", data)
       await onSubmit(data as ProfileProps)
     } catch (error) {
       toast({
@@ -69,7 +71,7 @@ export function PersonalInfoForm({ onSubmit, isLoading }: PersonalInfoFormProps)
         </CardDescription>
       </CardHeader>
       <Form {...form} >
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <form onSubmit={form.handleSubmit(handleSubmit as SubmitHandler<ProfileProps>)}>
           <CardContent className="space-y-4">
 
             {Object.keys(fieldData).map((profileField) => {
@@ -83,25 +85,28 @@ export function PersonalInfoForm({ onSubmit, isLoading }: PersonalInfoFormProps)
                   key={fieldKey} 
                   name={fieldKey} 
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="space-y-3">
                       <FormLabel>{fieldData[fieldKey].label}</FormLabel>
                       <FormControl>
                         {fieldType === 'radio' ? (
-                          <RadioGroup
-                            
-                            {...field} 
-                            value={field.value as string}
+                          <RadioGroup 
+                            //{...field}
+                            onValueChange={field.onChange} 
+                            defaultValue={field.value as string}
+                            className="flex flex-col space-y-1"
                           >
-                            <div className="flex items-center space-x-2">
-                              {/* Male option */}
-                              <RadioGroupItem value="male" id="male" />
-                              <Label htmlFor="male">Male</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              {/* Female option */}
-                              <RadioGroupItem value="female" id="female" />
-                              <Label htmlFor="female">Female</Label>
-                            </div>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="male" id="male" />
+                              </FormControl>
+                              <FormLabel htmlFor="male">Gender</FormLabel>
+                            </FormItem>
+                            <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormControl>
+                                <RadioGroupItem value="female" id="female" />
+                              </FormControl>
+                              <FormLabel htmlFor="female">Female</FormLabel>
+                            </FormItem>
                           </RadioGroup>
                         ) : (
                           <Input {...field} type={fieldType} placeholder={fieldPlaceholder} value={field.value as string} />
