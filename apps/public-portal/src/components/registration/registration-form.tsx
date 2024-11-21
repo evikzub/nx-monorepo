@@ -1,15 +1,12 @@
 'use client'
 
-import { AssessmentRegisterDto, assessmentSchema, type RegisterDto } from '@entrepreneur/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod';
-//import { useState } from 'react'
-import { Button } from '../ui/button'
-import { Input } from '../ui/input'
-//import { Label } from '../ui/label'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { useToast } from '../ui/use-toast'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+
+import { AssessmentRegisterDto, assessmentSchema, type RegisterDto } from '@entrepreneur/shared/types'
+import { useToast, Input, Button } from '@entrepreneur/shared/ui';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@entrepreneur/shared/ui'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@entrepreneur/shared/ui'
 
 interface RegistrationFormProps {
   //onSubmit: (data: RegisterDto) => Promise<void>

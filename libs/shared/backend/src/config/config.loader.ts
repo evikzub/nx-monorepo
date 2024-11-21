@@ -80,6 +80,13 @@ export const loadConfiguration: ConfigFactory = () => {
       host: process.env[ENV_KEYS.ASSESSMENT_SERVICE_HOST] || '',
       timeout: parseInt(process.env[ENV_KEYS.SERVICE_TIMEOUT] || '30000'),
     },
+    reportService: {
+      id: process.env[ENV_KEYS.REPORT_SERVICE_ID] || '',
+      name: process.env[ENV_KEYS.REPORT_SERVICE_NAME] || '',
+      port: parseInt(process.env[ENV_KEYS.REPORT_SERVICE_PORT] || '3005'),
+      host: process.env[ENV_KEYS.REPORT_SERVICE_HOST] || '',
+      timeout: parseInt(process.env[ENV_KEYS.SERVICE_TIMEOUT] || '30000'),
+    },
   };
 
   const result = environmentSchema.safeParse(config);

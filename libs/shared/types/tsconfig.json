@@ -2,6 +2,8 @@
   "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
+    "resolveJsonModule": true,  // Enable this option to allow importing JSON modules
+    "esModuleInterop": true,    // Allow default imports from modules without a default export
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,

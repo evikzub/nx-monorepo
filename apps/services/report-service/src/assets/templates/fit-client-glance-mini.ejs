@@ -1,0 +1,31 @@
+  <div align="center">
+      <table bgcolor="#F9F9F9" cellpadding="4" cellspacing="4" width="100%"> 
+          <tr>
+              <td colspan="5" class="pmTableHeader"><strong><%= commonContext.data.candg.values.title %></strong></td>
+          </tr>
+      
+          <tr class="pmTableRow">
+            <td align="center" valign="center">
+              <div <% if (clientProps.buyerMotiveTop1 === 1) { %> class="panel panel-cag" <% } %> align="center">
+                  <%= commonContext.data.candg.values.belonger %>
+              </div>
+          </td>
+          <td align="center" valign="center">
+              <div <% if (clientProps.buyerMotiveTop1 === 2) { %> class="panel panel-cag" <% } %> align="center">
+                  <%= commonContext.data.candg.values.achiever %>
+              </div>
+            </td>
+            <td align="center" valign="center">
+              <div <% if (clientProps.buyerMotiveTop1 === 4) { %> class="panel panel-cag" <% } %> align="center">
+                  <%= commonContext.data.candg.values.societal %>
+              </div>
+            </td>
+            <td align="center" valign="center">
+              <div <% if (clientProps.buyerMotiveTop1 === 3) { %> class="panel panel-cag" <% } %> align="center">
+                  <%= commonContext.data.candg.values.emulator %>
+              </div>
+            </td> 
+            <td></td>
+          </tr>   
+      </table>
+  </div>

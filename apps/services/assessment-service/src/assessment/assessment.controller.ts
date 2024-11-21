@@ -5,19 +5,11 @@ import {
   Patch, 
   Param, 
   Body, 
-  HttpStatus,
-  ParseUUIDPipe,
-  HttpException
+  ParseUUIDPipe
 } from '@nestjs/common';
 import { AssessmentService } from './assessment.service';
 import { AssessmentDto, NewAssessment, ProfileProps, ProfileSchema, registerAssessmentSchema, ValuesProps, ValuesSchema } from '@microservices-app/shared/types';
 import { ZodValidationPipe } from '@microservices-app/shared/backend';
-// import { 
-//   CreateAssessment, 
-//   UpdatePersonalInfoDto,
-//   UpdatePreferencesDto,
-//   UpdateQuizAnswersDto
-// } from './dto';
 
 @Controller('assessments')
 export class AssessmentController {
@@ -38,7 +30,6 @@ export class AssessmentController {
   @Patch(':id/profile')
   async updatePersonalInfo(
     @Param('id', ParseUUIDPipe) id: string,
-    //@Body() profile: ProfileProps
     @Body(new ZodValidationPipe(ProfileSchema)) profile: ProfileProps
   ) {
     console.log("profile: ", profile);

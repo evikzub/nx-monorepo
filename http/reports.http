@@ -1,0 +1,7 @@
+@id = 9412ca1b-e2b3-45ca-a230-8e9dfbccf8af
+###
+PATCH http://localhost:3005/api/reports/{{id}}/ep-mini
+Content-Type: application/json
+
+{
+}

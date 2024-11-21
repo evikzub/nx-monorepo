@@ -1,9 +1,8 @@
 import quizData from '@/data/quiz_data.json'
 import SortableList from '../ui/sortable-list';
-import { ValuesProps } from '@entrepreneur/shared/types';
+import { ValuesProps, QuestionsProps } from '@entrepreneur/shared/types';
 import { useToast } from '@entrepreneur/shared/ui';
 import { useAssessmentStore } from '@/store/assessment/slice';
-import { QuestionsProps } from '@/types/questions';
 
 interface PreferencesFormProps {
   onSubmit: (data: ValuesProps) => Promise<void>;

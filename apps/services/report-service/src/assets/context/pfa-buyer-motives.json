@@ -1,0 +1,90 @@
+{
+  "types": {
+    "type": [
+      {
+        "id": "2-1",
+        "name": "Achiever-Belonger",
+        "text_1": "#clientname# is an individual who is a tenacious business builder never satisfied until the customer is satisfied. People in this group demand of themselves measurable and consistent growth. They are driven, reliable and hardworking. Results and relationship defines success for the Achiever-Belonger. They favor unique, quality service or practical solution-oriented businesses.",
+        "text_2": "#clientname# is an honest, patient and focused performer with realistic expectations. Achiever-Belongers are conservative, conventional people with concrete beliefs and morals. Agreements are highly valued; finances, schedules and plans respected and adhered to with only incremental adjustments as necessary. They tend to take full responsibility for mistakes.",
+        "text_3": "They like it best when they can work close to home and with friends and associates whom they have come to trust and respect. Excellent problem solvers and planners they replicate systems and people. An excellent reputation, theirs and the company they choose to affiliate with is important to the Achiever-Belonger. Calculated in their decisions it is not uncommon for them to have an extensive due diligence process."
+      },
+      {
+        "id": "1-3",
+        "name": "Belonger-Emulator",
+        "text_1": "#clientname# is a hands-on practical business owner focused on long-term relationships and customer satisfaction. Motivated by strong morals, people in this group need to be secure, self-sufficient and connected within their family and community.  Family and security defines success for the Belonger-Emulator. They favor practical service-based concepts with a progressive twist.",
+        "text_2": "Belonger-Emulators are focused business owners with realistic expectations. They are conservative, conventional, risk adverse people with concrete beliefs and predictable lives. Frequently detail and process oriented they understand checks and balances. They are hardworking and committed in their need to provide security for loved ones. They take pride in their competence and loyalty. #clientname# is dedicated and trustworthy.",
+        "text_3": "They follow established routines, organized in large part around home, family, community, and social organizations to which they belong. Their routines and connections provide a spring board for recognition, satisfaction and success. They like it best when they can work with people they have come to trust. Cautious in their decisions it is not uncommon for them to have an extensive due diligence process."
+      },
+      {
+        "id": "1-2",
+        "name": "Belonger-Achiever",
+        "text_1": "#clientname# is a steady business builder never satisfied until the customer is happy and there is both stability and results. Motivated by a deeply rooted moral code, Belonger-Achievers are hardworking and committed to providing for and protecting their loved ones. Security and relationship defines their success. They favor service or practical solution-based businesses.",
+        "text_2": "#clientname# is an honest, patient and focused performer with realistic expectations. People in this group are conservative, conventional people with concrete beliefs. Agreements are highly valued; finances, schedules and plans respected and adhered to with only incremental adjustments as necessary. Frequently detail oriented they understand checks and balances.",
+        "text_3": "An excellent reputation, theirs and the company they choose to affiliate with is important to them. Predictably, the Belonger-Achiever is an excellent problem solver and planner, good at replicating systems and people. Although not considered flexible their obsession with results makes them persistent and tireless in their efforts. Calculated in their decisions it is not uncommon for them to have an extensive due diligence process."
+      },
+      {
+        "id": "1-4",
+        "name": "Belonger-Societal",
+        "text_1": "#clientname# is a hands-on practical business owner focused on long-term relationships and customer satisfaction. People in this group are motivated by the need to feel secure, harmonious and contributory to their family and community. Security and community involvement defines success for the Belonger-Societal. They favor proven, practical service or solution-based concepts.",
+        "text_2": "They are conservative, conventional people with concrete beliefs and deeply held morals. They follow established routines, organized in large part around home, family, community, and social organizations to which they belong. #clientname# is hardworking and committed in order to provide security for loved ones and service to others. They live lives of simplicity, harmony and integrity.",
+        "text_3": "Agreements are highly valued; finances, schedules and plans respected and adhered to with only incremental adjustments as necessary. They like it best when they can work with family, friends and associates whom they have come to trust.  They are business builders with realistic expectations. A Belonger-Societal would find a business that is high-touch and low-tech attractive."
+      },
+      {
+        "id": "3-1",
+        "name": "Emulator-Belonger",
+        "text_1": "#clientname# is expressive, people-oriented and competitive. Emulator-Belongers are motivated by achievement and are attempting to balance a deeply rooted moral code with a strong need to succeed. Money and relationship defines success for the Emulator-Belonger. They favor prestigious concepts that offer heroic, innovative yet practical day-to-day solutions for their clients.",
+        "text_2": "Emulator-Belongers are concerned about the opinions and approval of others. The need to succeed and be self-sufficient makes them hardworking. Driven and dependable they are at their best in any competitive environment that offers instant gratification and recognition. Unwilling to be embarrassed or fail they are fearless risk-takers determined to prove themselves.",
+        "text_3": "They enjoy the process of winning people over with their charm and expertise. Typically well liked and connected the Emulator-Belonger has an ever increasing sphere of influence. They take pride in being competent and one-step ahead. Company support, independence and quick profitability are key factors in selecting a business. A progressive concept with a team atmosphere will prove attractive."
+      },
+      {
+        "id": "3-2",
+        "name": "Emulator-Achiever",
+        "text_1": "#clientname# is trendy, fun loving and competitive. People in this group are motivated by achievement and concerned about the opinions and approval of others. Money defines success for Emulator-Achievers, who have an insatiable drive to meet their desires. Confident, competent and assertive they are driven to perform in any challenging or competitive environment. They favor stylish, cutting-edge and prestigious concepts.",
+        "text_2": "Emulator-Achievers are image, recognition, and money oriented, and well-suited to sell high ticket items. They are independent thinkers, quick to decision and enjoy taking great risks. The Emulator-Achiever demands a high degree of autonomy and control. Emulator-Achievers will question old ideas, authority and systems while looking for innovative methods to grow their businesses. As charismatic leaders they stimulate productivity within others.",
+        "text_3": "Flexible business formats and concepts with limited employees and customers to manage will prove a good fit. An opportunity which allows aggressive growth and potential for multi-units will no doubt attract them. The Emulator-Achiever would do well to consider businesses still dynamic and evolving so as to edge out competition, quickly gain market share while having a say in policy."
+      },
+      {
+        "id": "3-4",
+        "name": "Emulator-Societal",
+        "text_1": "#clientname# is an enthusiastic, competitive and visionary leader with a hands-on approach to business.  Motivated by the need to achieve and desire to express themselves the Emulator-Societal strives to master and excel at any task.  Accomplishment and intelligence defines success for the Emulator-Societal.  They favor prestigious, cutting-edge and change-based concepts.",
+        "text_2": "Confident and competent the Emulator-Societal has high expectations to master and perform in challenging situations. Charming and intelligent, they seem to win people over with little effort. Natural leaders, self-taught advisors and motivators, they enjoy empowering others. They demand a high degree of autonomy and recognition. They are science and salutatory arts minded thinkers with a bent towards the unusual.",
+        "text_3": "They respect money and knowledge and are in search of a business that offers an opportunity to showcase their unique signature or make an impact. Although opinionated and outspoken the Emulator-Societal is personable and social having endearing chameleon like tendencies. A dynamic and progressive, change, solution or cause-driven business will provide great attraction."
+      },
+      {
+        "id": "2-3",
+        "name": "Achiever-Emulator",
+        "text_1": "#clientname# is a tenacious business builder driven to dominate the market. Motivated by the desire for status and achievement, people in this group have goal-oriented lifestyles and deep commitment to success. Control and money defines success for the Achiever-Emulator. They favor classy or unique business-to-business replicable concepts with strong growth potential.",
+        "text_2": "Fearless and action oriented, the Achiever-Emulator will at times challenge processes deemed ineffective and implement their own systems. They respect time, numbers, systems and their competition in their ongoing drive to be the best. Great strategic planners and decision makers they abide by results based plans long into the future.  Adversity seems to strengthen their convictions.",
+        "text_3": "Direct and to the point, as a business person #clientname# might prove intimidating but nonetheless respected. Capable of wearing many hats, the Achiever-Emulator has high expectations and demands, both of themselves and of others. In the end it is about results, making a profit, and setting themselves apart. It is not necessary for others to like them but it is a mistake to not to heed their counsel."
+      },
+      {
+        "id": "2-4",
+        "name": "Achiever-Societal",
+        "text_1": "#clientname# is a sophisticated take-charge business owner with high self-esteem. Motivated by strong ethics and a desire for achievement the Achiever-Societal wins with composure and quiet dignity. Control, growth and respect define their success. They favor unique, quality conscious and replicable concepts where they can have an impact and leave a legacy.",
+        "text_2": "Achiever-Societal business owners will at times be absentee owners or apply a hands-off approach to management. Effective at delegating, they empower and hold accountable capable partners and employees. Achiever-Societals will evaluate their business regularly, stick to proven plans, and avoid reinventing the wheel. Their decisions are carefully calculated, never impetuous or implemented quickly.",
+        "text_3": "They typically have their hands in many pies, frequently volunteering and sitting on boards or committees. High ethical standards, a decisive nature, a history of achievement and a large dose of humility provide great insight into the Achiever-Societal's success. A proven and simple, solution or cause-based company with an impeccable reputation is one that will prove a good fit for the Achiever-Societal."
+      },
+      {
+        "id": "4-1",
+        "name": "Societal-Belonger",
+        "text_1": "#clientname# is a disciplined and knowledgeable business builder focused on contribution and relationships. Motivated by a deeply rooted moral code, people in this group have a desire to make a difference within their community. A harmonious life defines success for the Societal-Belonger. They tend to be well-educated and actively seek out information. They favor uncomplicated cause or solution-based concepts.",
+        "text_2": "#clientname# is a tenacious, capable teacher and a dedicated mentor.  Thus, people in this group are a great fit within a concept where employees or customers can progress and become self-sufficient. Generous and active in their communities, they can be found offering time, resources, counsel to those in need. Their innate protective nature acts as a fierce advocate for others from ignorance, manipulation or injury.",
+        "text_3": "They are capable and effective strategic planners. They are grounded and dependable people who value simplicity, knowledge, and responsibility. Societal-Belongers are open-minded yet practical; they look for durability, functionality, and value. Any effective solution-based and replicable system with impeccable standards and reputation will be of interest to the Societal-Belonger."
+      },
+      {
+        "id": "4-3",
+        "name": "Societal-Emulator",
+        "text_1": "#clientname# is an intelligent and visionary business builder committed to influence, inspire and change the world. People in this group are motivated to have an impact on others using their expertise, experience and education. Contribution and freedom defines success for the Societal-Emulator. They tend to be well educated and actively seek out information. They favor innovative change-based concepts.",
+        "text_2": "Active consumers their purchases reflect cultivated tastes for upscale, niche products and services. Image is important to Societal-Emulators, not as evidence of status or power but as an expression of their taste, independence, and personality. Their lives are characterized by variety.  Reflective, creative and passionate, #clientname# is relentless in pursuing and sharing ideals.",
+        "text_3": "They are change leaders and are receptive to new ideas and technologies. Societal-Emulators are among the established and emerging leaders in business, yet they continue to seek challenges. A change, solution or cause-based company with an eye to technology and global influence in areas such as ecology, economics, medicine, politics and education would attract them."
+      },
+      {
+        "id": "4-2",
+        "name": "Societal-Achiever",
+        "text_1": "#clientname# is an intelligent investor and/or business builder with altruistic intentions. Motivated by strong ethics Societal-Achievers desire to contribute and leave a legacy. Impact and contribution to the growth of others defines success for the Societal-Achiever. They favor simple cause-driven concepts often but not limited to education, environment or economics.",
+        "text_2": "They are mature, satisfied, comfortable, and reflective people who value simplicity, knowledge, and responsibility. It is not unusual to see a Societal-Achiever acting as an advocate for those they believe need protection, counsel or direction. Honorable, dependable and consistent in word and deed their reputation and credibility is tendentiously safeguarded.",
+        "text_3": "Highly principled, a decisive nature, a history of achievement and an insatiable desire to make a difference describes #clientname#. Experienced, knowledgeable and dedicated advisors and mentors people in this group enjoy being involved in policy, procedures and politics. A cause-based company with an impeccable reputation that promotes others' growth and success will be a good fit for the Societal-Achiever."
+      }
+    ]
+  }
+}

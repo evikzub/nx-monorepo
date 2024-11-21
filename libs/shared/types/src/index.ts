@@ -22,3 +22,7 @@ export * from './notification/notification.types';
 // Assessment
 export * from './validators/assessment.schema';
 export * from './validators/assessment-data.schema';
+
+// Questions
+export * from './validators/questions.schema';
+export * from './data';

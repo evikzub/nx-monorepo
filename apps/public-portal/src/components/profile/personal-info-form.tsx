@@ -2,7 +2,7 @@
 
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Button, Input, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, RadioGroup, RadioGroupItem, Label } from '@entrepreneur/shared/ui'
+import { Button, Input, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, RadioGroup, RadioGroupItem } from '@entrepreneur/shared/ui'
 import { useToast } from '@entrepreneur/shared/ui'
 import { ProfileProps } from '@entrepreneur/shared/types'
 import { ProfileSchema } from '@entrepreneur/shared/types'

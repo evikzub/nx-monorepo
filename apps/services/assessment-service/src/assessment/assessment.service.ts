@@ -37,8 +37,7 @@ export class AssessmentService {
 
   async update(id: string, data: UpdateAssessment): Promise<Assessment> {
     //const assessment = 
-    await this.findAssessment(id);
-
+    //await this.findAssessment(id);
     const updatedAssessment = await this.assessmentRepository.update(id, data);
     return updatedAssessment;
   }

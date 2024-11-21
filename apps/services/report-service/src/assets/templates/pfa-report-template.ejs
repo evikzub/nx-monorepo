@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proven Match Reports - Powered by FRANNET</title>
+    <link href="<%= css_file %>" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js CDN -->
+  </head>
+  <body>
+    <p class="rptHeader"><%= reportTitle %></p>
+    <p align="center">
+      <br /><br />
+      <img src="<%= logo_file %>" />
+      <br /><br />
+      <br /><br />
+      <span class="pmPrepareText1">Prepared for:</span>
+      <span class="pmPrepareText2"><br /><%= fullName %></span>
+      <br /><br />
+      <span class="pmPrepareText1"><%= reportDate %></span>
+    </p>
+
+    <!-- Page break -->
+    <div class="page-break"></div>
+    <!--- (Client at a Glance) --->	 
+    <%- include('header.ejs', { image: '1-header-icon.jpg', title: 'Client at a Glance', imagePath: imagePath }) %>
+    <%- include('fit-client-glance-mini.ejs', { data: commonContext, clientProps: clientProps }); %>
+
+    <!-- Page break -->
+    <div class="page-break"></div>
+    <!--- (Values and Motives) --->
+    <%- include('header.ejs', { image: '2-header-icon.jpg', title: 'Values and Motives', imagePath: imagePath }) %>
+    <%- include('fit-values-motives.ejs', { data: commonContext, valuesProps: valuesProps }) %>
+
+  </body>
+</html>

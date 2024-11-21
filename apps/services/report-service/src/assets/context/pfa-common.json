@@ -1,0 +1,200 @@
+{
+  "data": {
+    "language": "us",
+    "date_format": "mmmm d, yyyy",
+    "candg": {
+      "title": "Client at a Glance",
+      "values": {
+        "title": "Values / Motives",
+        "belonger": "Belonger",
+        "achiever": "Achiever",
+        "societal": "Societal",
+        "emulator": "Emulator"
+      },
+      "compliance": {
+        "title": "Compliance",
+        "low": "Low",
+        "average": "Average",
+        "high": "High",
+        "very_high": "Very High"
+      },
+      "sog": {
+        "title": "Stage of Growth",
+        "entrepreneurial": "Intropreneurial",
+        "partnership": "Balance",
+        "systematic": "Managerial Growth",
+        "bureaucracy": "Acceleration",
+        "intrepreneurial": "Enterprise"
+      },
+      "core_comp": {
+        "title": "Core Competencies",
+        "admin": "Administration & Management",
+        "sales": "Sales & Promotion",
+        "marketing": "Marketing & Advertising",
+        "technical": "Technical & Product Knowledge",
+        "client": "Client Management & Support"
+      },
+      "work_style": {
+        "title": "Work Style",
+        "director": "Director",
+        "promoter": "Promoter",
+        "collaborator": "Collaborator",
+        "thinker": "Thinker"
+      },
+      "focus_pref": {
+        "title": "Focus Preference",
+        "aware": "Aware",
+        "focused": "Focused",
+        "strategic": "Strategic",
+        "systematic": "Systematic"
+      },
+      "leader_style": {
+        "title": "Leadership Style",
+        "autocratic": "Autocratic",
+        "paternalistic": "Paternalistic",
+        "democratic": "Democratic",
+        "laissez": "Laissez-faire"
+      },
+      "sales_potential": {
+        "title": "Sales Potential",
+        "low": "Low",
+        "average": "Average",
+        "above_average": "Above Average",
+        "high": "High",
+        "very_high": "Very High"
+      },
+      "business_dev": {
+        "title": "Business Development",
+        "contractor": "Contractor",
+        "entrepreneur": "Entrepreneur",
+        "single": "Single Unit",
+        "multi": "Multi-Unit",
+        "area": "Area Developer"
+      },
+      "sales_orientation": {
+        "title": "Sales Orientation",
+        "consultative": "Consultative",
+        "relational": "Relational",
+        "competitive": "Competitive"
+      }
+    },
+    "values_1": {
+      "title": "Values and Motives",
+      "text_1": "Values and Motives",
+      "text_2": "Motives are the only true predictors of behavior and performance.  The <b>BASE Assessment</b> measures Buyer Motives and Value Sets which determine what about the self is the meaningful core that governs desires and the expression of those desires in life and business.",
+      "text_3": "Value Sets and Motives:"
+    },
+    "values_2": {
+      "title": "Values and Motives",
+      "text_1": "Values",
+      "text_2": "It has been established that it is an individual's personal value system which directly dictates his or her motivations.",
+      "text_3": "Hierarchy of Values",
+      "text_4": "Based on assessment results here are #clientname#'s values: ",
+      "text_5": "Values italicized in orange (if any) are Wild Cards. These values(s) may indicate a recent change, something amiss or redirecting of focus. Wild card values will have greater emphasis or attention given them during current situation, and may reposition in hierarchy once that value is expressed. "
+    },
+    "workstyle_1": {
+      "title": "Work Style",
+      "text_1": "Work Style",
+      "text_2": "The <b>Work Style Assessment</b> measures those aspects of personality pertinent to running a business, including managing time and resources.",
+      "text_3": "Work Style",
+      "director": "Director",
+      "promoter": "Promoter",
+      "collaborator": "Collaborator",
+      "thinker": "Thinker"
+    },
+    "workstyle_2": {
+      "title": "Work Style",
+      "text_1": "Work Styles at a Glance",
+      "text_2": "<%- include (work-style.ejs) %>"
+    },
+    "focus_pref": {
+      "title": "Focus Preference",
+      "text_1": "Focus Preference",
+      "text_2": "Nothing is more basic to performance, or more critical to success, than the ability to concentrate.  The <b>Focus Preference Scale</b> measures basic concentration skills.",
+      "text_3": "Focus Preference"
+    },
+    "leadership_style": {
+      "title": "Leadership, Rules, and Compliance",
+      "text_1": "Leadership Style",
+      "text_2": "The <b>Leadership and Rules Assessment</b> measures leadership style and the ability make and/or follow rules.",
+      "text_3": "Leadership Style",
+      "text_4": "Compliance Ratio",
+      "text_5": "It is important to understand a candidate's ability and willingness to comply with systems, procedures, policies, standards and regulations. Some systems are still dynamic and evolving thus policies and procedures not firmly instilled while other systems have precise rules, regulations and policies for doing business.",
+      "text_6": "Scores indicate #clientname# has a #scoretext# compliance for Systems, Rules, Standards and Financials.",
+      "low": "Low",
+      "average": "Average",
+      "high": "High",
+      "very_high": "Very High"
+    },
+    "core_competency": {
+      "title": "Core Competencies",
+      "text_1": "Core Competencies",
+      "text_2": "Highlighting competencies is not so much to alert one to skill sets but instead to determine if franchisor and business owner have complementary competencies.",
+      "text_3": "Primary",
+      "text_4": "Secondary",
+      "technical": "Technical",
+      "administrative": "Administrative",
+      "client_services": "Client Services",
+      "marketing": "Marketing",
+      "sales": "Sales"
+    },
+    "metaprograms": {
+      "title": "Meta Programs and Strategies",
+      "text_1": "Meta Programs and Strategies",
+      "text_2": "The <b>Meta Programs Assessment</b> measures primary strategies or filters an individual uses to communicate, assess information and make decisions.",
+      "direction_sort": "Direction Sort",
+      "frame_of_reference": "Frame of Reference",
+      "task_attitude": "Task Attitude",
+      "chunk_size": "Chunk Size",
+      "communication_style": "Communication Style"
+    },
+    "business_needs": {
+      "title": "Business Needs and Best Suited",
+      "text_1": "Business Needs and Best Suited"
+    },
+    "icr": {
+      "title": "Individual Comparison Report",
+      "age": "Age",
+      "sex": "Sex",
+      "female": "Female",
+      "male": "Male",
+      "education": "Education",
+      "highschool": "High School",
+      "yearsofcollege": "1-3 Years of College",
+      "college": "College",
+      "years": "Years",
+      "graduateschool": "Graduate School",
+      "income": "Income",
+      "maritalstatus": "Marital Status",
+      "single": "Single",
+      "married": "Married",
+      "divorced": "Divorced",
+      "widowed": "Widowed",
+      "children": "Children",
+      "tpa": "Top Performer Assessed",
+      "overallcompatibility": "Overall Compatibility",
+      "valuesandmotives": "Values and Motives",
+      "compliance": "Compliance",
+      "stageofgrowth": "Stage of Growth",
+      "competency": "Competency",
+      "workstyle": "Work Style",
+      "focuspreference": "Focus Preference",
+      "leadershipandrules": "Leadership and Rules",
+      "topperformer": "Top Performer",
+      "compatibility": "Compatibility",
+      "values": "Values",
+      "focus": "Focus",
+      "leadership": "Leadership",
+      "candidate": "Candidate",
+      "competencies": "Competencies",
+      "corecompetency": "Core Competency",
+      "primary": "Primary",
+      "secondary": "Secondary",
+      "leadershipandrulesstyle": "Leadership and Rules Style",
+      "capacity": "Capacity",
+      "salespotential": "Sales Potential",
+      "businessdevelopment": "Business Development",
+      "salesorientation": "Sales Orientation"
+    }
+  }
+}

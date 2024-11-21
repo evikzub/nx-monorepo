@@ -3,8 +3,7 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { MoveVertical } from "lucide-react";
-
-import { AnswerItemProps } from "@/types/questions";
+import { AnswerItemProps } from "@entrepreneur/shared/types";
 
 //import { Item } from "./common";
 

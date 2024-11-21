@@ -1,0 +1,129 @@
+<!-- FIT-ValuesAndMotives.ejs -->
+
+    <!---BUYER MOTIVES--->
+    <p>
+        <em><%- commonContext.data.values_1.text_2 %></em>
+        <p><%= valuesProps.BuyerMotive.text1 %></p>
+        <p><%= valuesProps.BuyerMotive.text2 %></p>
+        <p><%= valuesProps.BuyerMotive.text3 %></p>
+
+        <table width="100%">
+            <tr>
+                <td>
+                    <img src="<%= valuesProps.rptImagePath %>/3-image.jpg">
+                </td>
+                <td valign="top" align="center">
+                    <p class="rptSubHeader" align="center"><%= valuesProps.BuyerMotive.name %></p>
+                    <br>
+                    <!-- <canvas id="chart-${i}"></canvas> -->
+                    <!-- Chart for Values and Motives -->
+                    <canvas id="valuesMotivesChart" width="400" height="360"></canvas>
+                    <script>
+                        const ctx = document.getElementById('valuesMotivesChart').getContext('2d');
+                        const valuesMotivesChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Belonger', 'Achiever', 'Societal', 'Emulator'],
+                                datasets: [{
+                                    label: 'Motives',
+                                    data: [
+                                        <%= valuesProps.totals.BelongerTotals %>,
+                                        <%= valuesProps.totals.AchieverTotals %>,
+                                        <%= valuesProps.totals.SocietalTotals %>,
+                                        <%= valuesProps.totals.EmulatorTotals %>
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(255, 99, 132, 0.2)',
+                                        'rgba(54, 162, 235, 0.2)',
+                                        'rgba(255, 206, 86, 0.2)',
+                                        'rgba(75, 192, 192, 0.2)'
+                                    ],
+                                    borderColor: [
+                                        'rgba(255, 99, 132, 1)',
+                                        'rgba(54, 162, 235, 1)',
+                                        'rgba(255, 206, 86, 1)',
+                                        'rgba(75, 192, 192, 1)'
+                                    ],
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                responsive: false, // Makes the chart responsive
+                                //maintainAspectRatio: false, // Allows you to set custom height and width
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </td>
+            </tr>
+        </table>
+    </p>
+
+    <!-- Page break -->
+    <div class="page-break"></div>
+    <!--- (Values and Motives) --->
+    <%- include('header.ejs', { image: '2-header-icon.jpg', title: 'Values and Motives', rptImagePath: valuesProps.rptImagePath }) %>
+    
+    <p><font color="000000"><strong><%= valuesProps.ValuesText.text1 %></strong></font></p>
+    <p><em><%= valuesProps.ValuesText.text2 %></em></p>
+
+    <table width="100%">
+        <tr> 
+            <td valign="top" align="center">
+                <p class="rptSubHeader" align="center"><%= valuesProps.BuyerMotive.buyerMotiveTop1 %></p>
+                <br> 
+                <img src="<%= valuesProps.rptImagePath %>/<%= valuesProps.BuyerMotive.buyerMotiveTop1 %>.png" />
+            </td>
+            <td valign="top" align="center">
+                <p class="rptSubHeader" align="center"><%= valuesProps.BuyerMotive.buyerMotiveTop2 %></p>
+                <br> 
+                <img src="<%= valuesProps.rptImagePath %>/<%= valuesProps.BuyerMotive.buyerMotiveTop2 %>.png" />
+            </td>
+        </tr>
+    </table>
+
+    <p>
+        <strong><%= valuesProps.ValuesText.text3 %></strong><br><br>
+        <%= valuesProps.ValuesText.text4 %>
+    </p>
+
+    <table>
+        <tr>
+            <td>
+                <table width="445" height="267" cellpadding="0" cellspacing="0" border="0" background="<%= valuesProps.rptImagePath %>/4-hierachy.jpg">
+                    <tr>
+                        <td>&nbsp;</td>
+                    </tr>
+                </table>
+            </td>
+            <td valign="top" style="padding-top:22px;">
+                <table width="200">
+                    <tr>
+                        <td style="padding-top:12px;"><strong><%- valuesProps.HOVText.text1 %></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:28px;"><strong><%- valuesProps.HOVText.text2 %></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:13px;"><strong><%- valuesProps.HOVText.text3 %></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:13px;"><strong><%- valuesProps.HOVText.text4 %></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:13px;"><strong><%- valuesProps.HOVText.text5 %></strong></td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:6px;"><strong><%- valuesProps.HOVText.text6 %></strong></td>
+                    </tr>
+                </table>    
+            </td>
+        </tr>
+    </table>
+    
+    <p><%= valuesProps.ValuesText.text5 %></p>
+    <br>

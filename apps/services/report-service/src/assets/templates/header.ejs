@@ -1,0 +1,26 @@
+<!-- src/templates/header.ejs -->
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <td bgcolor="#FFF" width="100%">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td
+            bgcolor="#BCBDC0"
+            style="
+              color: #fff;
+              font-size: 24px;
+              padding-left: 30px;
+              padding-top: 5px;
+              padding-bottom: 5px;
+            "
+          >
+            <%= title %>
+          </td>
+        </tr>
+      </table>
+    </td>
+    <td align="right" width="117">
+      <img src="<%= imagePath %>/<%= image %>" class="img-responsive" />
+    </td>
+  </tr>
+</table>

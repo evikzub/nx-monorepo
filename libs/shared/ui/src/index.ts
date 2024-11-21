@@ -9,4 +9,3 @@ export * from './components/ui/use-toast';
 export * from './components/ui/checkbox';
 export * from './components/ui/radio-group';
 export * from './components/auth/login-form';
-export * from './components/auth/registration-form';

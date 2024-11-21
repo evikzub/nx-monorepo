@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { useAssessmentStore } from '@/store/assessment/slice'
-import { QuestionsProps } from "@/types/questions";
+import { QuestionsProps } from "@entrepreneur/shared/types";
 
 import SubCard from "./sub-card";
 import { ValuesProps } from "@entrepreneur/shared/types";
@@ -92,8 +92,8 @@ const SortableList = ({ onSubmit, initialCards }: SortableListProps) => {
 
     //console.log("Values:", valuesResult);
     //alert(JSON.stringify(valuesResult)); // Ensure the result is displayed correctly
-    if (assessment?.id === null) {
-      throw new Error("Assessment ID is null");
+    if (!assessment?.id) {
+      throw new Error("Assessment ID is undefined");
     }
 
     //console.log("buildResults -> call")
@@ -109,9 +109,9 @@ const SortableList = ({ onSubmit, initialCards }: SortableListProps) => {
   };
 
   const checkAssessmentId = () => {
-    if (assessment?.id === null) {
+    if (!assessment?.id) {
       //throw new Error("Assessment ID is null");
-      console.log("Assessment ID is null");
+      console.log("Assessment ID is undefined");
       router.push("/");
       return false;
     }

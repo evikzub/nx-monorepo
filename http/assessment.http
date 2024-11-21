@@ -10,7 +10,7 @@ Content-Type: application/json
 
 ### Update assessment profile
 @id = ba155cef-f851-4604-ad92-48b1b715beae
-PUT http://localhost:3004/api/assessments/{{id}}/profile
+PATCH http://localhost:3004/api/assessments/{{id}}/profile
 Content-Type: application/json
 
 {
@@ -19,3 +19,11 @@ Content-Type: application/json
   //"state": "São Paulo",
   //"zipCode": "01001-000"
 }
+
+### Get Assessment
+@id_test = 9412ca1b-e2b3-45ca-a230-8e9dfbccf8af
+GET http://localhost:3004/api/assessments/{{id_test}}
+
+### Evaluate results
+PATCH http://localhost:3004/api/evaluations/{{id_test}}/evaluate
+
