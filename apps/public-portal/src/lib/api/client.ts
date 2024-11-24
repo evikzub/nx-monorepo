@@ -13,11 +13,7 @@ export const apiClient = axios.create({
   timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
-  },
-  // // Ensure we get proper error responses
-  // validateStatus: (status) => {
-  //   return status >= 200 && status < 500; // Handle 4xx errors as responses, not network errors
-  // },
+  }
 });
 
 apiClient.interceptors.response.use(

@@ -12,8 +12,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private readonly configService: AppConfigService) {
     this.consul = new Consul({
-      host: this.configService.envConfig.consul.host,
-      port: Number(this.configService.envConfig.consul.port),
+      // host: this.configService.envConfig.consul.host,
+      // port: Number(this.configService.envConfig.consul.port),
     });
   }
 
@@ -26,9 +26,17 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
   }
 
   async registerService(serviceName?: string) {
-    const serviceConfig = serviceName === 'assessment-service' 
-      ? this.configService.envConfig.assessmentService 
-      : this.configService.envConfig.userService;
+    let serviceConfig;
+    switch (serviceName) {
+      case 'assessment-service':
+        serviceConfig = this.configService.envConfig.assessmentService;
+        break;
+      case 'user-service':
+        serviceConfig = this.configService.envConfig.userService;
+        break;
+      default:
+        throw new Error(`Consul Service cannot register: ${serviceName}`);
+    }
 
     this.serviceId = serviceConfig.id;
     const registerOptions: RegisterOptions = {
@@ -50,8 +58,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
       const errorData = {
         error: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined,
-        consulHost: this.configService.envConfig.consul.host,
-        consulPort: this.configService.envConfig.consul.port,
+        //consulHost: this.configService.envConfig.consul.host,
+        //consulPort: this.configService.envConfig.consul.port,
       };
       this.logger.error('Failed to register service', JSON.stringify(errorData, null, 2));
       throw error;

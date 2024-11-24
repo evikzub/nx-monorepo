@@ -1,0 +1,76 @@
+# Development Traefik configuration
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+api:
+  insecure: true  # Enable dashboard for development
+  dashboard: true
+
+# Enable logging to debug connection issues
+log:
+  level: INFO  # Change to DEBUG if needed
+  format: json
+  filePath: "/var/log/traefik/traefik.log"
+#   level: DEBUG  # More verbose logging for development
+
+accessLog:
+  filePath: "/var/log/traefik/access.log"
+  bufferingSize: 100
+
+entryPoints:
+  web:
+    address: ":80"
+    forwardedHeaders:
+      insecure: true  # Accept forwarded headers in dev
+    # Add transport configuration
+    transport:
+      lifeCycle:
+        requestAcceptGraceTimeout: 10s
+        graceTimeOut: 10s
+      respondingTimeouts:
+        readTimeout: 30s
+        writeTimeout: 30s
+        idleTimeout: 180s
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: microservices-network-dev
+    watch: true  # Watch for container changes
+    defaultRule: "PathPrefix(`/api/{{ trimPrefix `/` .Name }}`)"
+    # swarmMode: false  # Explicitly disable swarm mode
+    useBindPortIP: false  # Use container IP
+
+# Development specific middleware
+http:
+  middlewares:
+    cors-dev:
+      cors:
+        allowedOrigins: 
+          - "http://localhost:*"
+          - "http://127.0.0.1:*"
+        allowedMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        allowedHeaders:
+          - "*"
+        addVaryHeader: true
+    
+    dev-strip-prefix:
+      stripPrefix:
+        prefixes: 
+          - "/api"
+        forceSlash: true
+
+  # Add global configuration
+  serversTransport:
+    maxIdleConnsPerHost: 100
+    forwardingTimeouts:
+      dialTimeout: 30s
+      responseHeaderTimeout: 30s
+      idleConnTimeout: 180s

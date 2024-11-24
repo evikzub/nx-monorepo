@@ -22,7 +22,7 @@ describe('EmailService', () => {
 
   const mockConfigService = {
     envConfig: {
-      nodeEnv: 'development',
+      nodeEnv: 'test',
       emailService: emailConfig,
       //   app: {
       //     name: 'Test App'
@@ -65,7 +65,8 @@ describe('EmailService', () => {
 
     const templates = service.getTemplates();
     //console.log(templates);
-    expect(templates.size).toBe(3);
+    // 4 templates + base
+    expect(templates.size).toBe(4);
 
     // Mock the transporter's sendMail method
     const sendMailMock = jest

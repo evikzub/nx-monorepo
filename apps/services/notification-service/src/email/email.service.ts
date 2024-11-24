@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { AppConfigService } from '@microservices-app/shared/backend';
-import { NotificationPayload, NotificationType } from '@microservices-app/shared/types';
+import { NotificationPayload, NotificationType, ReportDataMessage } from '@microservices-app/shared/types';
 import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
@@ -29,13 +29,20 @@ export class EmailService {
   }
 
   private getTemplatesPath(): string {
-    // In development
-    if (this.config.envConfig.nodeEnv === 'development' || this.config.envConfig.nodeEnv === 'test') {
-      return path.join(process.cwd(), 'apps/services/notification-service/src/templates/emails');
+
+    // In test
+    if (this.config.envConfig.nodeEnv === 'test') {
+      return path.join(process.cwd(), 'apps/services/notification-service/src/assets/templates/emails');
     }
     
-    // In production (after build)
-    return path.join(process.cwd(), 'dist/apps/services/notification-service/templates/emails');
+    // // In production (after build)
+    // return path.join(process.cwd(), 'dist/apps/services/notification-service/templates/emails');
+    // development || test
+
+    // console.log('process.env.NODE_ENV', this.config.envConfig.nodeEnv);
+    // console.log('process.cwd()', process.cwd());
+    // console.log('__dirname', __dirname);
+    return path.join(__dirname, 'assets', 'templates', 'emails');
   }
 
   private initializeTemplates() {
@@ -89,12 +96,19 @@ export class EmailService {
     return this.templates;
   }
 
+  private getReportTemplate(templateId: string) {
+    const template = this.templates.get(templateId);
+
+    if (!template) {
+      throw new Error(`Template not found: ${templateId}`);
+    }
+
+    return template;
+}
+
   async sendEmail(payload: NotificationPayload): Promise<void> {
     try {
-      const template = this.templates.get(payload.templateId);
-      if (!template) {
-        throw new Error(`Template not found: ${payload.templateId}`);
-      }
+      const template = this.getReportTemplate(payload.templateId);
 
       const html = template({
         ...payload.data,
@@ -116,8 +130,40 @@ export class EmailService {
     }
   }
 
+  async sendReport(payload: NotificationPayload): Promise<void> {
+    try {
+      const template = this.getReportTemplate(payload.templateId);
+      const reportData = payload.data as ReportDataMessage;
+
+      const html = template({
+        firstName: reportData.firstName,
+        appName: 'Entrepreneur Team',
+        year: new Date().getFullYear(),
+      });
+
+      await this.transporter.sendMail({
+        from: this.config.envConfig.emailService.user,
+        to: payload.recipient,
+        subject: this.getSubject(payload),
+        html,
+        attachments: [{
+          filename: 'report.pdf',
+          path: reportData.pdfUrl,
+          contentType: 'application/pdf',
+        }],
+      });
+
+      this.logger.debug(`Email sent to ${payload.recipient}`);
+    } catch (error) {
+      this.logger.error(`Failed to send email: ${error.message}`);
+      throw error;
+    }
+  }
+
   private getSubject(payload: NotificationPayload): string {
     const subjects = {
+      [NotificationType.EMAIL_OTP]: 'Your OTP code',
+      [NotificationType.EMAIL_REPORT]: 'Your report is ready',
       [NotificationType.EMAIL_VERIFICATION]: 'Verify your email',
       [NotificationType.PASSWORD_RESET]: 'Reset your password',
       [NotificationType.ACCOUNT_CHANGES]: 'Account update notification',

@@ -7,7 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    AppConfigModule.forFeature(), // Import AppConfigModule
+    //AppConfigModule, //.forFeature(), // Import AppConfigModule
     SharedAuthModule.register(),
     UserModule,
   ],

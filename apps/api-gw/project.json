@@ -1,0 +1,54 @@
+{
+  "name": "api-gw",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api-gw/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "api-gw:build",
+        "runBuildTargetDependencies": false,
+        "watch": true,
+        "host": "0.0.0.0"
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "api-gw:build:development"
+        },
+        "production": {
+          "buildTarget": "api-gw:build:production"
+        }
+      }
+    },
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/api-gw",
+        "main": "apps/api-gw/src/main.ts",
+        "tsConfig": "apps/api-gw/tsconfig.app.json",
+        "assets": ["apps/api-gw/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/api-gw/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "inspect": true
+        },
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    }
+  }
+}

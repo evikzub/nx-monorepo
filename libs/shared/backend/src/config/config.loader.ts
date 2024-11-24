@@ -12,10 +12,10 @@ export const loadConfiguration: ConfigFactory = () => {
       poolMin: parseInt(process.env[ENV_KEYS.DATABASE_POOL_MIN] || '0'),
       poolMax: parseInt(process.env[ENV_KEYS.DATABASE_POOL_MAX] || '10'),
     },
-    consul: {
-      host: process.env[ENV_KEYS.CONSUL_HOST] || '',
-      port: parseInt(process.env[ENV_KEYS.CONSUL_PORT] || '8500'),
-    },
+    // consul: {
+    //   host: process.env[ENV_KEYS.CONSUL_HOST] || '',
+    //   port: parseInt(process.env[ENV_KEYS.CONSUL_PORT] || '8500'),
+    // },
     apiGateway: {
       id: process.env[ENV_KEYS.API_GATEWAY_ID] || '',
       name: process.env[ENV_KEYS.API_GATEWAY_NAME] || '',

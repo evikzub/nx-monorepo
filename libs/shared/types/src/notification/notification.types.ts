@@ -1,4 +1,6 @@
 export enum NotificationType {
+  EMAIL_OTP = 'EMAIL_OTP',
+  EMAIL_REPORT = 'EMAIL_REPORT',
   EMAIL_VERIFICATION = 'EMAIL_VERIFICATION',
   PASSWORD_RESET = 'PASSWORD_RESET',
   ACCOUNT_CHANGES = 'ACCOUNT_CHANGES',
@@ -38,6 +40,8 @@ export enum NotificationErrorCode {
 }
 
 export enum NotificationRoutingKey {
+  EMAIL_OTP = 'notification.email.otp',
+  EMAIL_REPORT = 'notification.email.report',
   EMAIL_VERIFICATION = 'notification.email.verification',
   PASSWORD_RESET = 'notification.email.password-reset',
   ACCOUNT_CHANGES = 'notification.email.account-changes',

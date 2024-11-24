@@ -18,7 +18,8 @@ export * from './validators/auth.schema';
 
 // Notification
 export * from './notification/notification.types';
-
+export * from './notification/notification.config';
+export * from './notification/notification.message';
 // Assessment
 export * from './validators/assessment.schema';
 export * from './validators/assessment-data.schema';

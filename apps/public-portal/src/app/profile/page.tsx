@@ -2,6 +2,7 @@
 
 import { ProfileForm } from '@/components/profile/profile-form'
 import { AssessmentService } from '@/services/assessment/service'
+import { ReportService } from '@/services/report/service'
 import { useAssessmentStore } from '@/store/assessment/slice'
 import { ProfileStep } from '@/types/profile'
 import { ProfileProps, ValuesProps } from '@entrepreneur/shared/types'
@@ -18,8 +19,17 @@ export default function ProfileSetupPage() {
       setAssessment(updatedAssessment, token || '')
     }
     if (step === 'motives') {
-      //console.log("motives data: ", data)
-      await AssessmentService.updateMotives(assessment?.id || '', data as ValuesProps)
+      if (!assessment || !assessment?.id) {
+        throw new Error('Assessment is not defined')
+      }
+
+      // Update motives
+      await AssessmentService.updateMotives(assessment.id, data as ValuesProps)
+      
+      // Create report
+      await ReportService.createReportEPMini(assessment.id)
+
+      // Redirect to success page
       router.push('/profile/success')
     }
   }

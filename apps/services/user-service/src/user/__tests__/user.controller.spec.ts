@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { AppConfigService, DatabaseModule, loadConfiguration } from '@microservices-app/shared/backend';
+import { AppConfigService, DatabaseModule, loadConfiguration, ProviderService } from '@microservices-app/shared/backend';
 import { UserController } from '../user.controller';
 import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
@@ -12,6 +12,7 @@ import {
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { mockAmqpConnection } from './mocks/amqp-connection.mock';
+import { MessageService } from '../../message/message.service';
 
 
 describe('UserController Integration Tests', () => {
@@ -31,7 +32,7 @@ describe('UserController Integration Tests', () => {
         DatabaseModule,
       ],
       controllers: [UserController],
-      providers: [UserService, UserRepository, AppConfigService,
+      providers: [UserService, UserRepository, AppConfigService, MessageService, ProviderService,
         {
           provide: AmqpConnection,
           useValue: mockAmqpConnection,

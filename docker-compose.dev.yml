@@ -1,0 +1,195 @@
+name: microservices-app-dev # This sets a different project name for development
+
+services:
+  traefik:
+    image: traefik:v3.2
+    container_name: traefik-dev
+    restart: unless-stopped  # Add restart policy
+    command:
+      - "--configFile=/etc/traefik/traefik.yaml"
+    ports:
+      - "8000:80"   # Dev API port
+      - "8080:8080" # Dashboard port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.dev.yaml:/etc/traefik/traefik.yaml:ro
+      - ./logs/traefik:/var/log/traefik  # Volume for logs
+    environment:
+      - DEV_PORT=8000
+    networks:
+      - microservices-network-dev
+
+  public-portal:
+    build:
+      context: .
+      dockerfile: apps/public-portal/Dockerfile.dev
+    container_name: public-portal.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env.dev
+    ports:
+      - "2200:2200" # Next.js app port
+      - "9228:9229" # Debug port
+    environment:
+      - NODE_ENV=development
+      - PORT=2200
+      # Next.js specific env variables
+      - NEXT_PUBLIC_API_GATEWAY_URL=http://localhost:8000/api
+      - NEXT_PUBLIC_NOTIFICATION_SERVICE_URL=http://host.docker.internal:3014/api
+    networks:
+      - microservices-network-dev
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.public-portal-dev.rule=PathPrefix(`/`)"
+      # - "traefik.http.services.public-portal-dev.loadbalancer.server.port=2200"
+    command: npx nx serve public-portal --configuration=development --port 2200
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api-gw/Dockerfile.dev
+    container_name: api-gw.dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/dist
+    env_file:
+      - ./.env.dev
+    environment:
+      - PORT=${API_GATEWAY_PORT}
+      - NODE_ENV=development
+      - POSTGRES_HOST=host.docker.internal
+      - RABBITMQ_HOST=host.docker.internal
+    ports:
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+      - "9229:9229" # for debugging
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw-dev.rule=PathPrefix(`/api`)"
+      # - "traefik.http.routers.api-gw-dev.middlewares=cors-dev,dev-strip-prefix"
+      # - "traefik.http.services.api-gw-dev.loadbalancer.server.port=${API_GATEWAY_PORT}"
+    networks:
+      - microservices-network-dev
+    # Enable hot reload
+    # command: npx nx serve api-gw --watch
+    # command: nodemon --config nodemon.json
+    command: npx nx serve api-gw --configuration=development --verbose
+
+  user-service:
+    build:
+      context: .
+      dockerfile: apps/services/user-service/Dockerfile.dev
+    container_name: user-service.dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/dist
+    env_file:
+      - .env.dev
+    environment:
+      - PORT=${USER_SERVICE_PORT}
+      - NODE_ENV=development
+      - POSTGRES_HOST=host.docker.internal
+      - RABBITMQ_HOST=host.docker.internal
+    ports:
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+      - "9230:9229" # for debugging
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service-dev.rule=PathPrefix(`/api/users`)"
+      # - "traefik.http.routers.user-service-dev.middlewares=cors-dev"
+      # - "traefik.http.services.user-service-dev.loadbalancer.server.port=${USER_SERVICE_PORT}"
+    networks:
+      - microservices-network-dev
+    # command: npx nx serve user-service --configuration=development    
+    command: npx nx serve user-service --configuration=development --watch --verbose
+    # Enable hot reload
+    # command: npm run start:user-service:hmr
+
+  assessment-service:
+    build:
+      context: .
+      dockerfile: apps/services/assessment-service/Dockerfile.dev
+    container_name: assessment-service.dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/dist
+    env_file:
+      - .env.dev
+    environment:
+      - NODE_ENV=development
+      - PORT=${ASSESSMENT_SERVICE_PORT}
+      - POSTGRES_HOST=host.docker.internal
+      - RABBITMQ_HOST=host.docker.internal
+    ports:
+      - "${ASSESSMENT_SERVICE_PORT}:${ASSESSMENT_SERVICE_PORT}"
+      - "9231:9229"  # Different debug port for each service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.assessment-service-dev.rule=PathPrefix(`/api/assessments`)"
+      # - "traefik.http.routers.assessment-service-dev.middlewares=cors-dev"
+      # - "traefik.http.services.assessment-service-dev.loadbalancer.server.port=${ASSESSMENT_SERVICE_PORT}"
+    networks:
+      - microservices-network-dev
+    command: npx nx serve assessment-service --configuration=development --verbose
+
+  # report-service:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/services/report-service/Dockerfile.dev
+  #   container_name: report-service.dev
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #     - /app/dist
+  #   env_file:
+  #     - .env.dev
+  #   environment:
+  #     - NODE_ENV=development
+  #     - PORT=${REPORT_SERVICE_PORT}
+  #   ports:
+  #     - "${REPORT_SERVICE_PORT}:${REPORT_SERVICE_PORT}"
+  #     - "9232:9229"  # Different debug port for each service
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.report-service-dev.rule=PathPrefix(`/api/reports`)"
+  #     # - "traefik.http.routers.report-service-dev.middlewares=cors-dev"
+  #     # - "traefik.http.services.report-service-dev.loadbalancer.server.port=${REPORT_SERVICE_PORT}"
+  #   networks:
+  #     - microservices-network-dev
+  #   command: npx nx serve report-service --configuration=development
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: apps/services/notification-service/Dockerfile.dev
+    container_name: notification-service.dev
+    volumes:
+      - .:/app
+      - ./dist/apps/services/report-service/assets/output:/app/reports # For report service
+      - /app/node_modules
+      - /app/dist
+    env_file:
+      - .env.dev
+    environment:
+      - NODE_ENV=development
+      - PORT=${NOTIFICATION_SERVICE_PORT}
+    ports:
+      - "${NOTIFICATION_SERVICE_PORT}:${NOTIFICATION_SERVICE_PORT}"
+      - "9233:9229"  # Different debug port for each service
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notification-service-dev.rule=PathPrefix(`/api/notifications`)"
+      # - "traefik.http.routers.notification-service-dev.middlewares=cors-dev"
+      # - "traefik.http.services.notification-service-dev.loadbalancer.server.port=${NOTIFICATION_SERVICE_PORT}"
+    networks:
+      - microservices-network-dev
+    command: npx nx serve notification-service --configuration=development
+
+networks:
+  microservices-network-dev:
+    driver: bridge

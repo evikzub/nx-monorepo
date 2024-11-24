@@ -1,0 +1,36 @@
+# Build stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy only necessary configuration files
+COPY package*.json nx.json tsconfig.base.json ./
+COPY eslint.config.js jest.preset.js ./
+
+# Copy source files and project configurations
+COPY apps/api-gateway ./apps/api-gateway
+COPY libs/shared/backend ./libs/shared/backend
+COPY libs/shared/types ./libs/shared/types
+
+# Install dependencies (includes nx from package.json)
+RUN npm ci --legacy-peer-deps
+
+# Build using local nx
+RUN npx nx build api-gateway --verbose
+
+# Production stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy only built files and package files
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/package*.json ./
+
+# Install production dependencies
+RUN npm ci --omit=dev --legacy-peer-deps
+
+ENV PORT=${API_GATEWAY_PORT}
+EXPOSE ${PORT}
+
+CMD ["node", "dist/apps/api-gateway/main.js"]

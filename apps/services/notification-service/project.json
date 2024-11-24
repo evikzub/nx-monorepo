@@ -21,6 +21,33 @@
           "buildTarget": "notification-service:build:production"
         }
       }
+    },
+    "build": {
+    "executor": "@nx/webpack:webpack",
+    "outputs": ["{options.outputPath}"],
+    "defaultConfiguration": "production",
+    "options": {
+      "target": "node",
+      "compiler": "tsc",
+      "outputPath": "dist/apps/services/notification-service",
+      "main": "apps/services/notification-service/src/main.ts",
+      "tsConfig": "apps/services/notification-service/tsconfig.app.json",
+      "assets": ["apps/services/notification-service/src/assets"],
+      "isolatedConfig": true,
+      "webpackConfig": "apps/services/notification-service/webpack.config.js"
+    },
+    "configurations": {
+      "development": {
+        "optimization": false,
+        "extractLicenses": false,
+        "inspection": true
+      },
+      "production": {
+        "optimization": true,
+          "extractLicenses": true,
+          "inspection": false
+        }
+      }
     }
   }
 }

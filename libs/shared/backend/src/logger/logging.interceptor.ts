@@ -21,7 +21,7 @@ import {
   LogType,
 } from './logging.config';
 import { IncomingHttpHeaders } from 'http';
-import { CorrelationService } from './correlation.context';
+import { CorrelationService } from '../correlation/correlation.context';
 import { TraceService } from './trace.context';
 
 @Injectable()

@@ -16,7 +16,8 @@ export * from './testing/test-logger.service';
 export * from './logger/trace.context';
 export * from './logger/trace.types';
 // Correlation
-export * from './logger/correlation.context';
+export * from './correlation/correlation.context';
+export * from './correlation/correlation.middleware';
 // Auth
 export * from './auth/guards/jwt-auth.guard';
 export * from './auth/guards/roles.guard';
@@ -32,3 +33,6 @@ export * from './rabbitmq/rabbitmq.module';
 export * from './pipes/zod-validation.pipe';
 // Consul
 export * from './consul/consul.service';
+// Provider
+export * from './provider/provider.module';
+export * from './provider/provider.service';

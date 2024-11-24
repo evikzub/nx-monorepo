@@ -21,6 +21,33 @@
           "buildTarget": "assessment-service:build:production"
         }
       }
+    },
+      "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/services/assessment-service",
+        "main": "apps/services/assessment-service/src/main.ts",
+        "tsConfig": "apps/services/assessment-service/tsconfig.app.json",
+        "assets": ["apps/services/assessment-service/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/services/assessment-service/webpack.config.js"
+      },
+      "configurations": {
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "inspection": true
+        },
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspection": false
+        }
+      }
     }
   }
 }

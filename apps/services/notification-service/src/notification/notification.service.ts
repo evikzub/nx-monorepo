@@ -3,8 +3,8 @@ import {
   NotificationPayload, 
   NotificationType,
 } from '@microservices-app/shared/types';
-import { EmailService } from './email.service';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { EmailService } from '../email/email.service';
+//import { AppConfigService } from '@microservices-app/shared/backend';
 
 @Injectable()
 export class NotificationService {
@@ -39,6 +39,9 @@ export class NotificationService {
           break;
         case NotificationType.ADMIN_ALERT:
           await this.processAdminAlert(payload);
+          break;
+        case NotificationType.EMAIL_REPORT:
+          await this.emailService.sendReport(payload);
           break;
         default:
           //TODO: Route to dead letter queue

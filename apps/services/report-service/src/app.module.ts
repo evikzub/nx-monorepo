@@ -4,6 +4,6 @@ import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [AppConfigModule.forRoot(), ReportModule],
-  providers: [ConsulService],
+  //providers: [ConsulService],
 })
 export class AppModule {}

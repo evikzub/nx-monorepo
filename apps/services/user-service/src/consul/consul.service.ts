@@ -12,8 +12,8 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
 
   constructor(private readonly configService: AppConfigService) {
     this.consul = new Consul({
-      host: this.configService.envConfig.consul.host,
-      port: Number(this.configService.envConfig.consul.port),
+      // host: this.configService.envConfig.consul.host,
+      // port: Number(this.configService.envConfig.consul.port),
     });
   }
 
@@ -54,10 +54,33 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
         const errorData = {
             error: error.message,
             stack: error.stack,
-            consulHost: this.configService.envConfig.consul.host,
-            consulPort: this.configService.envConfig.consul.port,
+            // consulHost: this.configService.envConfig.consul.host,
+            // consulPort: this.configService.envConfig.consul.port,
         };
       this.logger.error('Failed to register service', JSON.stringify(errorData, null, 2));
+      throw error;
+    }
+  }
+
+  async getServiceAddress(serviceName: string): Promise<string> {
+    try {
+      // Get service health information
+      const serviceHealth = await this.consul.health.service(serviceName);
+      
+      // Filter for healthy instances only
+      const healthyServices = serviceHealth.filter(
+        (entry) => entry.Checks.every((check) => check.Status === 'passing')
+      );
+
+      if (healthyServices.length === 0) {
+        throw new Error(`No healthy instances of ${serviceName} found`);
+      }
+
+      // Simple round-robin or random selection could be implemented here
+      const service = healthyServices[0].Service;
+      return `http://${service.Address}:${service.Port}`;
+    } catch (error) {
+      console.error(`Error getting service address for ${serviceName}:`, error);
       throw error;
     }
   }
@@ -65,7 +88,9 @@ export class ConsulService implements OnModuleInit, OnModuleDestroy {
   private async startHealthCheckMonitoring(serviceName: string) {
     setInterval(async () => {
       try {
+        // Get service health information
         const healthChecks = await this.consul.health.service(serviceName);
+
         const ourCheck = healthChecks.find(check => 
           check.Service.ID === this.serviceId
         );

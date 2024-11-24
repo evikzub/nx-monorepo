@@ -7,7 +7,7 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppConfigService, LoggingInterceptor } from '@microservices-app/shared/backend';
-import { ConsulService, LoggerService } from '@microservices-app/shared/backend';
+import { LoggerService } from '@microservices-app/shared/backend';
 
 import { AppModule } from './app.module';
 

@@ -118,7 +118,12 @@ export class ReportsPFAService {
   }
 
   private async convertHtmlToPdf(html: string, config: ConfigProps) {
-    const browser = await puppeteer.launch();
+    //const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      headless: true,
+//      executablePath: '/usr/bin/chromium', // Adjust path based on your image
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Avoid issues with sandboxing
+    });
     const page = await browser.newPage();
 
     // Set the base URL for relative paths
@@ -156,6 +161,7 @@ export class ReportsPFAService {
     //   );
     // });
 
+    this.logger.log(`Generating PDF to ${config.rptOutputPath}`);
     // Generate PDF
     await page.pdf({
       path: path.join(config.rptOutputPath, 'report.pdf'),

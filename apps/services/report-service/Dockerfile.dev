@@ -1,0 +1,24 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install development dependencies
+COPY package*.json ./
+COPY nx.json tsconfig.base.json ./
+COPY eslint.config.js jest.preset.js ./
+
+# Install dependencies and nodemon globally
+RUN npm ci --legacy-peer-deps 
+# && \
+#     npm install -g nodemon
+
+# Copy service-specific nodemon configuration
+# COPY apps/services/report-service/nodemon.json ./nodemon.json
+# COPY apps/services/report-service/webpack.config.js ./apps/services/report-service/
+
+ENV PORT=${REPORT_SERVICE_PORT}
+EXPOSE ${PORT}
+EXPOSE 9229
+
+# We'll override this in docker-compose
+CMD ["npx", "nx", "serve", "report-service", "--configuration=development"] 

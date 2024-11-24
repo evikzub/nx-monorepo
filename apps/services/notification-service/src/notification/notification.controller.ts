@@ -1,24 +1,24 @@
 import { Controller, Logger } from '@nestjs/common';
-import { NotificationService } from './notification.service';
+import {
+  RabbitSubscribe,
+  MessageHandlerErrorBehavior,
+} from '@golevelup/nestjs-rabbitmq';
+
 import {
   NotificationPayload,
   NotificationType,
   NotificationErrorCode,
 } from '@microservices-app/shared/types';
-import {
-  //AmqpConnection,
-  RabbitSubscribe,
-  MessageHandlerErrorBehavior,
-} from '@golevelup/nestjs-rabbitmq';
-import { deadLetterArguments, notificationArguments, rabbitmqConfig } from './notifications.config';
+import { deadLetterArguments, notificationArguments, rabbitmqConfig } from '@microservices-app/shared/types';
 
+import { NotificationService } from './notification.service';
 
 @Controller()
 export class NotificationController {
   private readonly logger = new Logger(NotificationController.name);
+
   constructor(
     private readonly notificationService: NotificationService,
-    //private readonly amqpConnection: AmqpConnection
   ) {}
 
   @RabbitSubscribe({
@@ -36,6 +36,23 @@ export class NotificationController {
       `Received email verification notification for ${data.recipient}`
     );
     await this.processNotification(data, NotificationType.EMAIL_VERIFICATION);
+  }
+
+  @RabbitSubscribe({
+    exchange: rabbitmqConfig.exchanges.notifications,
+    routingKey: rabbitmqConfig.queues.notifications.emailReport.routingKey,
+    queue: rabbitmqConfig.queues.notifications.name,
+    errorBehavior: MessageHandlerErrorBehavior.NACK,
+    queueOptions: {
+        durable: true,
+        arguments: notificationArguments,
+    }
+  })
+  async handleEmailReport(data: NotificationPayload) {
+    this.logger.debug(
+      `Received email report notification for ${data.recipient}`
+    );
+    await this.processNotification(data, NotificationType.EMAIL_REPORT);
   }
 
 //   @EventPattern('notification.email.password-reset')
@@ -117,17 +134,13 @@ export class NotificationController {
     //context: RmqContext,
     type: NotificationType
   ) {
-    //const channel = context.getChannelRef();
-    //const message = context.getMessage();
-    //const pattern = context.getPattern(); // Add this line
-
-    //this.logger.debug(`Processing notification with pattern: ${pattern}`);
     this.logger.debug(`Message content: ${JSON.stringify(data)}`);
 
     try {
       this.logger.debug(
         `Processing ${type} notification for ${data.recipient}`
       );
+
       await this.notificationService.handleNotification(data);
 
       //channel.ack(message);

@@ -2,6 +2,7 @@
  * This is not a production server yet!
  * This is only a minimal backend to get started.
  */
+// declare const module: any;
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
@@ -25,6 +26,10 @@ async function bootstrap() {
   const serviceConfig = configService.envConfig.userService;
   await app.listen(serviceConfig.port, serviceConfig.host);
   
+  // if (module.hot) {
+  //   module.hot.accept();
+  //   module.hot.dispose(() => app.close());
+  // }
   Logger.log(
     `🚀 User-Service is running on: http://${serviceConfig.host}:${serviceConfig.port}/${globalPrefix}`
   );

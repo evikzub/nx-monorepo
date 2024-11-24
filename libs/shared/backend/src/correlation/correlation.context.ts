@@ -9,6 +9,7 @@ interface CorrelationContext {
 }
 
 export class CorrelationService {
+  
   private static storage = new AsyncLocalStorage<CorrelationContext>();
 
   static setContext(context: CorrelationContext) {

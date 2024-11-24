@@ -1,6 +1,6 @@
 import { Logger } from '@nestjs/common';
 import { LogWriter } from 'drizzle-orm';
-import { CorrelationService } from './correlation.context';
+import { CorrelationService } from '../correlation/correlation.context';
 import { TraceService } from './trace.context';
 
 export class DrizzleLogger implements LogWriter {

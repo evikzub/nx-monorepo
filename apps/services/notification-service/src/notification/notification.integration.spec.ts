@@ -5,7 +5,7 @@ import { AppConfigModule } from '@microservices-app/shared/backend';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { NotificationPayload, NotificationPriority, NotificationType } from '@microservices-app/shared/types';
 import { NotificationService } from './notification.service';
-import { EmailService } from './email.service';
+import { EmailService } from '../email/email.service';
 
 describe('Notification Integration', () => {
   let app: INestApplication;

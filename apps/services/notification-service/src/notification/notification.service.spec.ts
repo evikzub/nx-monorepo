@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationService } from './notification.service';
-import { EmailService } from './email.service';
+import { EmailService } from '../email/email.service';
 import { Logger } from '@nestjs/common';
 import { NotificationPayload, NotificationPriority, NotificationType } from '@microservices-app/shared/types';
 

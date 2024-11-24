@@ -1,0 +1,28 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json tsconfig.base.json ./
+COPY eslint.config.js jest.preset.js ./
+
+# Copy Tailwind and PostCSS configs
+COPY tailwind-workspace-preset.js ./
+COPY apps/public-portal/tailwind.config.js ./apps/public-portal/
+COPY apps/public-portal/postcss.config.js ./apps/public-portal/
+
+# Copy project configuration
+COPY apps/public-portal/project.json ./apps/public-portal/
+
+# Install all dependencies (including dev dependencies)
+RUN npm ci --legacy-peer-deps
+
+# Set development environment
+ENV NODE_ENV=development
+
+EXPOSE ${PORT}
+EXPOSE 9229
+
+# Use nx serve for development
+CMD ["npx", "nx", "serve", "public-portal", "--verbose"]

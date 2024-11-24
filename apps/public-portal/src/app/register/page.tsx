@@ -1,8 +1,10 @@
 'use client'
 
-import { RegistrationForm } from '@entrepreneur/shared/ui'
 import { useRouter } from 'next/navigation'
+//import { RegistrationForm } from '@entrepreneur/shared/ui'
 import { AssessmentRegisterDto } from '@entrepreneur/shared/types'
+
+import { RegistrationForm } from '@/components/registration/registration-form'
 import { AssessmentService } from '@/services/assessment/service'
 import { useAssessmentStore } from '@/store/assessment/slice'
 

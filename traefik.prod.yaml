@@ -1,0 +1,72 @@
+# Production Traefik configuration
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: false  # Disable dashboard in production
+  insecure: false
+
+log:
+  level: ERROR  # Less verbose logging for production
+  format: json  # JSON format for better log processing
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: letsencrypt
+
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "your-email@domain.com"
+      storage: "/etc/traefik/acme.json"
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    exposedByDefault: false
+    network: microservices-network-prod
+    watch: false  # Disable watch in production
+    defaultRule: "PathPrefix(`/api/{{ trimPrefix `/` .Name }}`)"
+
+http:
+  middlewares:
+    cors-prod:
+      cors:
+        allowedOrigins: 
+          - "https://yourdomain.com"
+        allowedMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+        allowedHeaders:
+          - "Authorization"
+          - "Content-Type"
+        addVaryHeader: true
+    
+    secure-headers:
+      headers:
+        sslRedirect: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        contentSecurityPolicy: "default-src 'self'" 

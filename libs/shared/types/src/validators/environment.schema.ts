@@ -24,10 +24,10 @@ const databaseConfigSchema = z.object({
   poolMax: z.coerce.number().positive(),
 });
 
-const consulConfigSchema = z.object({
-  host: z.string().min(1),
-  port: z.coerce.number().positive(),
-});
+// const consulConfigSchema = z.object({
+//   host: z.string().min(1),
+//   port: z.coerce.number().positive(),
+// });
 
 export const jwtSchema = z.object({
   secret: z.string().min(1),
@@ -69,7 +69,7 @@ export const rabbitmqConfigSchema = z.object({
 export const environmentSchema = z.object({
   nodeEnv: z.enum(['development', 'test', 'production']).default('development'),
   database: databaseConfigSchema,
-  consul: consulConfigSchema,
+  //consul: consulConfigSchema,
   apiGateway: apiGatewayConfigSchema,
   userService: serviceConfigSchema,
   assessmentService: serviceConfigSchema,

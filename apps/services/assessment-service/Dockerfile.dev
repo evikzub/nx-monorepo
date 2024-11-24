@@ -1,0 +1,25 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install development dependencies
+COPY package*.json ./
+COPY nx.json tsconfig.base.json ./
+COPY eslint.config.js jest.preset.js ./
+
+# Install dependencies and nodemon globally
+RUN npm ci --legacy-peer-deps
+#  && \
+#     npm install -g nodemon
+
+# Copy service-specific nodemon configuration
+COPY apps/services/assessment-service/nodemon.json ./nodemon.json
+
+
+ENV PORT=${ASSESSMENT_SERVICE_PORT}
+EXPOSE ${PORT}
+EXPOSE 9229
+
+# CMD ["nodemon"] 
+# We'll override this in docker-compose
+CMD ["npx", "nx", "serve", "assessment-service", "--configuration=development"]

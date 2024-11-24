@@ -7,15 +7,15 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
-import { AppConfigService, ConsulService, LoggerService, LoggingInterceptor } from '@microservices-app/shared/backend';
+import { AppConfigService, LoggerService, LoggingInterceptor } from '@microservices-app/shared/backend';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: new LoggerService(),
   });
 
-  const consulService = app.get(ConsulService);
-  await consulService.registerService('assessment-service');
+  // const consulService = app.get(ConsulService);
+  // await consulService.registerService('assessment-service');
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);

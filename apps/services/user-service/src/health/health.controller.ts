@@ -4,7 +4,6 @@ import {
   HealthCheck,
   HealthCheckService,
   HttpHealthIndicator,
-  HealthCheckResult,
 } from '@nestjs/terminus';
 
 @Controller('health')

@@ -4,13 +4,16 @@ import { UserService } from '../user.service';
 import { UserRepository } from '../../repositories/user.repository';
 import { ConfigModule } from '@nestjs/config';
 import {
+//  AppConfigModule,
   AppConfigService,
   DatabaseModule,
   loadConfiguration,
+  ProviderService,
 } from '@microservices-app/shared/backend';
 import { NewUser, NotificationPriority, NotificationRoutingKey, UserRole } from '@microservices-app/shared/types';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { mockAmqpConnection } from './mocks/amqp-connection.mock';
+import { MessageService } from '../../message/message.service';
 
 describe('UserService', () => {
   const email = 'test.service@example.com';
@@ -28,7 +31,7 @@ describe('UserService', () => {
         }),
         DatabaseModule,
       ],
-      providers: [UserService, UserRepository, AppConfigService,
+      providers: [UserService, UserRepository, AppConfigService, MessageService, ProviderService,
         {
           provide: AmqpConnection,
           useValue: mockAmqpConnection,

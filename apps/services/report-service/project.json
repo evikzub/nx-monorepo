@@ -21,6 +21,33 @@
           "buildTarget": "report-service:build:production"
         }
       }
+    },
+    "build": {
+    "executor": "@nx/webpack:webpack",
+    "outputs": ["{options.outputPath}"],
+    "defaultConfiguration": "production",
+    "options": {
+      "target": "node",
+      "compiler": "tsc",
+      "outputPath": "dist/apps/services/report-service",
+      "main": "apps/services/report-service/src/main.ts",
+      "tsConfig": "apps/services/report-service/tsconfig.app.json",
+      "assets": ["apps/services/report-service/src/assets"],
+      "isolatedConfig": true,
+      "webpackConfig": "apps/services/report-service/webpack.config.js"
+    },
+    "configurations": {
+      "development": {
+        "optimization": false,
+        "extractLicenses": false,
+        "inspection": true
+      },
+      "production": {
+        "optimization": true,
+        "extractLicenses": true,
+          "inspection": false
+        }
+      }
     }
   }
 }

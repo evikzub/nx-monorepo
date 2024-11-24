@@ -1,0 +1,28 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install development dependencies
+COPY package*.json ./
+COPY nx.json tsconfig.base.json ./
+COPY eslint.config.js jest.preset.js ./
+
+# Install dependencies and nodemon globally
+RUN npm ci --legacy-peer-deps
+# && \
+#    npm i -D webpack-node-externals run-script-webpack-plugin webpack --legacy-peer-deps
+#     npm install -g nodemon
+
+# Copy webpack HMR config
+# COPY apps/services/user-service/webpack-hmr.config.js ./apps/services/user-service/
+
+# Copy service-specific nodemon configuration
+# COPY apps/services/user-service/nodemon.json ./nodemon.json
+# COPY apps/services/user-service/webpack.config.js ./apps/services/user-service/
+
+ENV PORT=${USER_SERVICE_PORT}
+EXPOSE ${PORT}
+EXPOSE 9229
+
+# We'll override this in docker-compose
+CMD ["npx", "nx", "serve", "user-service", "--configuration=development", "--verbose"] 

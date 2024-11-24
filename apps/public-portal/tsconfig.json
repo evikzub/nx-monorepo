@@ -42,7 +42,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "../../libs/shared/types/src/validators/questions.ts"  ],
   "exclude": [
     "node_modules"
   ],

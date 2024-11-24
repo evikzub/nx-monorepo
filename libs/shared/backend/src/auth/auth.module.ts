@@ -41,14 +41,15 @@ export class SharedAuthModule {
     return {
       module: SharedAuthModule,
       imports: [
-        AppConfigModule.forFeature(),
+        //AppConfigModule.forFeature(),
         PassportModule.register({ defaultStrategy: 'jwt' }),
         JwtModule.registerAsync({
-          imports: [AppConfigModule.forFeature()],
+          imports: [AppConfigModule],
+          //imports: [AppConfigModule.forFeature()],
           inject: [AppConfigService],
           useFactory: (configService: AppConfigService) => {
             const secret = options?.secret || configService.envConfig.jwt.secret;
-            this.logger.debug(`Initializing JwtModule with secret: ${secret ? '[SET]' : '[MISSING]'}`);
+            this.logger.debug(`Initializing JwtModule Module with secret: ${secret ? '[SET]' : '[MISSING]'}`);
             
             if (!secret) {
               throw new Error('JWT_SECRET is not configured');
@@ -71,7 +72,7 @@ export class SharedAuthModule {
         JwtStrategy,
         JwtAuthGuard,
         RolesGuard,
-        AppConfigService,
+        //AppConfigService,
       ],
     };
   }

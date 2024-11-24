@@ -1,3 +1,5 @@
+import { NotificationRoutingKey } from "./notification.types";
+
 // TODO: Find the way how to pass .env config to the decorator
 export const rabbitmqConfig = {
     exchanges: {
@@ -10,7 +12,13 @@ export const rabbitmqConfig = {
         routingKey: 'notification.#',
         messageTtl: 86400000, // 24 hours in milliseconds
         emailVerification: {
-          routingKey: 'notification.email.verification',
+          routingKey: NotificationRoutingKey.EMAIL_VERIFICATION, //'notification.email.verification',
+        },
+        emailOtp: {
+          routingKey: NotificationRoutingKey.EMAIL_OTP, //'notification.email.otp',
+        },
+        emailReport: {
+          routingKey: NotificationRoutingKey.EMAIL_REPORT, //'notification.email.report',
         },
       },
       deadLetter: {

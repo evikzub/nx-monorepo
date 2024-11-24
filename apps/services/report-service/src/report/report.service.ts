@@ -8,6 +8,7 @@ import { AssessmentDto } from "@microservices-app/shared/types";
 import { AssessmentRepository } from "../assessment/assessment.repository";
 import { ConfigProps } from "./types/config.schema";
 import { ReportsPFAService } from "./pfa/reports-pfa.serice";
+import { MessageService } from "../message/message.service";
 
 @Injectable()
 export class ReportService {
@@ -15,7 +16,8 @@ export class ReportService {
 
   constructor(
     private readonly assessmentRepository: AssessmentRepository,
-    private readonly reportsPFAService: ReportsPFAService
+    private readonly reportsPFAService: ReportsPFAService,
+    private readonly messageService: MessageService,
   ) {}
 
   async getAssessment(id: string): Promise<AssessmentDto> {
@@ -32,7 +34,7 @@ export class ReportService {
       rptImagePath: path.join(__dirname, 'assets', 'images'),
       rptJsonPath: path.join(__dirname, 'assets', 'context'),
       rptTemplatePath: path.join(__dirname, 'assets', 'templates'),
-      rptOutputPath: path.join(__dirname, 'assets', 'out'),
+      rptOutputPath: path.join(__dirname, 'assets', 'output'),
     };
 
     // if (!fs.existsSync(config.rptCSSPath)) {
@@ -50,6 +52,7 @@ export class ReportService {
     const config = await this.defineConfig(assessment);
     await this.reportsPFAService.createReportPFA(config);
 
+    await this.messageService.sendReport(id, assessment, path.join(config.rptOutputPath, 'report.pdf'));
     return "Report created";
   }
 }
