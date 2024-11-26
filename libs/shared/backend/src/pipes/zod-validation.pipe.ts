@@ -12,7 +12,7 @@ export class ZodValidationPipe implements PipeTransform {
       this.logger.debug('Validation error', error);
       throw new BadRequestException('Validation failed', {
         cause: error,
-        description: error instanceof ZodError ? error.errors.toString() : 'undefined',
+        description: error instanceof ZodError ? error.errors.map(e => e.message).join(', ') : 'undefined',
       });
     }
   }

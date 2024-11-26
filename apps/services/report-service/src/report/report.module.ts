@@ -1,28 +1,19 @@
-import { Module } from "@nestjs/common";
-import * as ejs from 'ejs';
+import { Module } from '@nestjs/common';
+import {
+  DatabaseModule,
+  ProviderModule,
+} from '@microservices-app/shared/backend';
 
-import { DatabaseModule, ProviderModule } from "@microservices-app/shared/backend";
+import { AssessmentRepository } from '../assessment/assessment.repository';
+import { MessageService } from '../message/message.service';
 
-import { AssessmentRepository } from "../assessment/assessment.repository";
-import { ReportsPFAService } from "./pfa/reports-pfa.serice";
-import { ReportsPFAValuesService } from "./pfa/report-pfa-values.service";
-import { ReportService } from "./report.service";
-import { ReportController } from "./report.controller";
-import { MessageService } from "../message/message.service";
+import { ReportFactoryModule } from './factory/report-factory.module';
+import { ReportController } from './report.controller';
+import { ReportService } from './report.service';
 
 @Module({
-  imports: [DatabaseModule, ProviderModule],
-  providers: [
-    ReportService, 
-    AssessmentRepository, 
-    ReportsPFAService,
-    ReportsPFAValuesService,
-    MessageService,
-    {
-      provide: 'EJS',
-      useValue: ejs,
-    },
-  ],
+  imports: [DatabaseModule, ProviderModule, ReportFactoryModule],
+  providers: [ReportService, AssessmentRepository, MessageService],
   controllers: [ReportController],
   exports: [ReportService],
 })

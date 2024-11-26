@@ -20,6 +20,7 @@ export class MessageService {
       lastName: assessment.lastName,
       email: assessment.email,
       //pdfUrl,
+      // TODO: Add parameter to get the pdf path from the config
       pdfUrl: "/app/reports/report.pdf"
 
     };

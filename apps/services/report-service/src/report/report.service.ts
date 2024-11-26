@@ -2,13 +2,13 @@ import fs from "fs";
 import path from "path";
 
 import { Injectable, Logger } from "@nestjs/common";
-
 import { AssessmentDto } from "@microservices-app/shared/types";
 
 import { AssessmentRepository } from "../assessment/assessment.repository";
-import { ConfigProps } from "./types/config.schema";
-import { ReportsPFAService } from "./pfa/reports-pfa.serice";
 import { MessageService } from "../message/message.service";
+
+import { ReportConfigProps, ReportAssetProps } from "./core/types/report.config";
+import { ReportFactoryService, ReportType } from "./factory/report-factory.service";
 
 @Injectable()
 export class ReportService {
@@ -16,43 +16,72 @@ export class ReportService {
 
   constructor(
     private readonly assessmentRepository: AssessmentRepository,
-    private readonly reportsPFAService: ReportsPFAService,
+    private readonly reportFactoryService: ReportFactoryService,
     private readonly messageService: MessageService,
   ) {}
 
-  async getAssessment(id: string): Promise<AssessmentDto> {
+  private async getAssessment(id: string): Promise<AssessmentDto> {
     this.logger.log(`Fetching assessment with id: ${id}`); // Log the action
     return this.assessmentRepository.findById(id);
   }
 
-  async defineConfig(assessment: AssessmentDto): Promise<ConfigProps> {
-    const config: ConfigProps = {
-      assessment,
-      //rptLogoPath: path.join(__dirname, '..', '..', 'src', 'assets', 'logos'),
-      rptCSSPath: path.join(__dirname, 'assets', 'css'),
-      rptLogoPath: path.join(__dirname, 'assets', 'logos'),
-      rptImagePath: path.join(__dirname, 'assets', 'images'),
-      rptJsonPath: path.join(__dirname, 'assets', 'context'),
-      rptTemplatePath: path.join(__dirname, 'assets', 'templates'),
-      rptOutputPath: path.join(__dirname, 'assets', 'output'),
+  private defineAssets(): ReportAssetProps {
+    return {
+      css: path.join(__dirname, 'assets', 'css'),
+      logo: path.join(__dirname, 'assets', 'logos'),
+      images: path.join(__dirname, 'assets', 'images'),
+      templates: path.join(__dirname, 'assets', 'templates'),
+      output: path.join(__dirname, 'assets', 'output'),
     };
-
-    // if (!fs.existsSync(config.rptCSSPath)) {
-    //   throw new Error(`Output path ${config.rptOutputPath} does not exist`);
-    // }
-    // if (!fs.existsSync(config.rptLogoPath)) {
-    //   throw new Error(`Output path ${config.rptOutputPath} does not exist`);
-    // }
-
-    return config;
   }
 
-  async createReportEPMini(id: string) {
-    const assessment = await this.getAssessment(id);
-    const config = await this.defineConfig(assessment);
-    await this.reportsPFAService.createReportPFA(config);
+  private defineConfig(assessment: AssessmentDto, reportTemplate: string): ReportConfigProps {
+    return {
+      assessment,
+      reportTemplate,
+      assets: this.defineAssets(),
+    };
+  }
 
-    await this.messageService.sendReport(id, assessment, path.join(config.rptOutputPath, 'report.pdf'));
+  private ensureDirectoriesExist(config: ReportConfigProps): void {
+    const directories = [
+      config.assets.css,
+      config.assets.logo,
+      config.assets.images,
+      config.assets.templates,
+      config.assets.output,
+    ];
+
+    directories.forEach(dir => {
+      if (!fs.existsSync(dir)) {
+        throw new Error(`Path [${dir}] does not exist. Make sure this path is correct and try again.`);
+      }
+    });
+  }
+
+  private getReportTemplate(type: ReportType): string {
+    switch (type) {
+      case ReportType.EPMini:
+        return 'pfa-report-template.ejs';
+      default:
+        return undefined;
+    }
+  }
+
+  async createReport(type: ReportType, id: string): Promise<string> {
+    //  async createReportEPMini(id: string) {
+    const assessment = await this.getAssessment(id);
+
+    const reportTemplate = this.getReportTemplate(type);
+    const config = await this.defineConfig(assessment, reportTemplate);
+
+    this.ensureDirectoriesExist(config);
+    
+    const reportGenerator = this.reportFactoryService.getReportGenerator(type);
+    await reportGenerator.generateReport(config);
+    //await this.reportsPFAService.createReportPFA(config);
+
+    await this.messageService.sendReport(id, assessment, path.join(config.assets.output, 'report.pdf'));
     return "Report created";
   }
 }

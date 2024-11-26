@@ -10,14 +10,14 @@ export class ConsulRegistrationService implements OnModuleInit, OnModuleDestroy 
   private serviceId: string;
 
   constructor(private readonly configService: AppConfigService) {
-    const consulHost = this.configService.envConfig.consul.host;
-    const consulPort = this.configService.envConfig.consul.port;
+    // const consulHost = this.configService.envConfig.consul.host;
+    // const consulPort = this.configService.envConfig.consul.port;
     
-    this.logger.log(`Initializing Consul client with host=${consulHost}, port=${consulPort}`);
+    // this.logger.log(`Initializing Consul client with host=${consulHost}, port=${consulPort}`);
     
     this.consul = new Consul({
-      host: consulHost,
-      port: consulPort,
+      // host: consulHost,
+      // port: consulPort,
     });
   }
 
@@ -41,6 +41,7 @@ export class ConsulRegistrationService implements OnModuleInit, OnModuleDestroy 
         name: serviceName,
         port: servicePort,
         address: serviceHost,
+        tags: ['api-gateway', process.env.NODE_ENV],
         // check: {
         //   name: 'api-gateway-health',
         //   http: `http://localhost:${servicePort}/health`,

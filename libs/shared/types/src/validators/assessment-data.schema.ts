@@ -74,7 +74,9 @@ export const AssessmentSetSchema = z.object({
 export type ProfileProps = z.infer<typeof ProfileSchema>;
 export const ProfileSchema = z.object({
   gender: z.enum(['male', 'female']).optional(),
-  dateOfBirth: z.string().date().optional().refine((date) => date && new Date(date) <= new Date(), {
+  dateOfBirth: z.string().date().optional().refine((date) => {
+    return !date || (date && new Date(date) <= new Date())
+  }, {
     message: "Date of birth must be in the past",
   }),
   country: z.string().optional(),
