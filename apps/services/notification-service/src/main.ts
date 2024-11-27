@@ -6,28 +6,29 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { AppConfigService, LoggerService } from '@microservices-app/shared/backend';
+import { AppConfigService, LoggingInterceptor, PinoLoggerService } from '@microservices-app/shared/backend';
 //import { NotificationModule } from './app/notification.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
   //const app = await NestFactory.create(NotificationModule, {
-    logger: new LoggerService(),
+  const app = await NestFactory.create(AppModule, {
+    //logger: new LoggerService(),
   });
 
   const configService = app.get<AppConfigService>(AppConfigService);
-  const config = configService.envConfig;
+  const { port, host } = configService.envConfig.notificationService;
+
+  const logger = app.get(PinoLoggerService);
+  app.useLogger(logger);
+  //app.useGlobalInterceptors(new LoggingInterceptor(configService, logger));
 
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  //await app.startAllMicroservices();
-  await app.listen(config.notificationService.port);
-
+  await app.listen(port, host);
   Logger.log(
-    `🚀 Notification-Service is running on: http://localhost:${config.notificationService.port}/${globalPrefix}`
+    `🚀 Notification-Service is running on: http://${host}:${port}/${globalPrefix}`
   );
 }
 
 bootstrap();
-

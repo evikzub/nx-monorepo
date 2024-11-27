@@ -6,14 +6,13 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
-import { AppConfigService, LoggingInterceptor } from '@microservices-app/shared/backend';
-import { LoggerService } from '@microservices-app/shared/backend';
+import { AppConfigService, LoggingInterceptor, PinoLoggerService } from '@microservices-app/shared/backend';
 
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: new LoggerService(),
+    //logger: new LoggerService(),
   });
 
   // const consulService = app.get(ConsulService);
@@ -24,7 +23,9 @@ async function bootstrap() {
   
   const configService = app.get(AppConfigService);
 
-  app.useGlobalInterceptors(new LoggingInterceptor(configService));
+  const logger = app.get(PinoLoggerService);
+  app.useLogger(logger);
+  app.useGlobalInterceptors(new LoggingInterceptor(configService, logger));
 
   const { port, host } = configService.envConfig.reportService;
   

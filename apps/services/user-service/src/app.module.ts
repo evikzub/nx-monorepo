@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppConfigModule } from '@microservices-app/shared/backend';
+import { AppConfigModule, AppConfigService, LoggerModule } from '@microservices-app/shared/backend';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 //import { ConsulModule } from './consul/consul.module';
@@ -12,6 +12,10 @@ import { UserModule } from './user/user.module';
     //   isGlobal: true,
     // }),
     AppConfigModule.forRoot(),
+    LoggerModule.forRootAsync({
+      useFactory: (configService: AppConfigService) => 
+        configService.envConfig.userService.name,
+    }),
     AuthModule,
     UserModule,
     //ConsulModule,

@@ -3,8 +3,9 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  Logger,
+  //Logger,
   HttpException,
+  LoggerService,
 } from '@nestjs/common';
 import { AppConfigService } from '../config/config.service';
 import { Observable } from 'rxjs';
@@ -26,10 +27,13 @@ import { TraceService } from './trace.context';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  private readonly logger = new Logger('HTTP');
+  //private readonly logger = new Logger('HTTP');
   private readonly isDevelopment: boolean;
 
-  constructor(private readonly configService: AppConfigService) {
+  constructor(
+    private readonly configService: AppConfigService,
+    private readonly logger: LoggerService, //PinoLoggerService
+  ) {
     this.isDevelopment = this.configService.envConfig.nodeEnv === 'development';
   }
 

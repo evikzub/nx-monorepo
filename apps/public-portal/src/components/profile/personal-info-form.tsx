@@ -22,7 +22,7 @@ type FieldData = Record<keyof ProfileProps, FieldDataType>
 const fieldData: FieldData = {
   gender: { default: undefined, label: 'Gender', placeholder: 'Your gender', type: 'radio' },
   dateOfBirth: { default: undefined, label: 'Date of Birth', placeholder: 'Your date of birth', type: 'date' },
-  country: { default: '', label: 'Country', placeholder: 'Your country+' },
+  country: { default: '', label: 'Country', placeholder: 'Your country' },
   state: { default: '', label: 'State', placeholder: 'Your state' },
   city: { default: '', label: 'City', placeholder: 'Your city' },
   address: { default: '', label: 'Address', placeholder: 'Your address' },
@@ -98,7 +98,7 @@ export function PersonalInfoForm({ onSubmit: { value: onSubmit }, isLoading }: P
                               <FormControl>
                                 <RadioGroupItem value="male" id="male" />
                               </FormControl>
-                              <FormLabel htmlFor="male">Gender</FormLabel>
+                              <FormLabel htmlFor="male">Male</FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center space-x-3 space-y-0">
                               <FormControl>

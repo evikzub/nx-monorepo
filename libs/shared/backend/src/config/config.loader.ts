@@ -34,6 +34,11 @@ export const loadConfiguration: ConfigFactory = () => {
       host: process.env[ENV_KEYS.USER_SERVICE_HOST] || '',
       timeout: parseInt(process.env[ENV_KEYS.SERVICE_TIMEOUT] || '30000'),
     },
+    elastic: {
+      url: process.env[ENV_KEYS.ELASTIC_URL] || '',
+      username: process.env[ENV_KEYS.ELASTIC_USERNAME] || '',
+      password: process.env[ENV_KEYS.ELASTIC_PASSWORD] || '',
+    },
     jwt: {
       secret: process.env[ENV_KEYS.JWT_SECRET] || '',
       expiresIn: process.env[ENV_KEYS.JWT_EXPIRES_IN] || '1h',

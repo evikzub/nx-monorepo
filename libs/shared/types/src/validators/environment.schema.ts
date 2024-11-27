@@ -29,6 +29,12 @@ const databaseConfigSchema = z.object({
 //   port: z.coerce.number().positive(),
 // });
 
+const elasticConfigSchema = z.object({
+  url: z.string().url(),
+  username: z.string().min(1),
+  password: z.string().min(1),
+});
+
 export const jwtSchema = z.object({
   secret: z.string().min(1),
   expiresIn: z.string().default('1h'),
@@ -69,6 +75,7 @@ export const rabbitmqConfigSchema = z.object({
 export const environmentSchema = z.object({
   nodeEnv: z.enum(['development', 'test', 'production']).default('development'),
   database: databaseConfigSchema,
+  elastic: elasticConfigSchema,
   //consul: consulConfigSchema,
   apiGateway: apiGatewayConfigSchema,
   userService: serviceConfigSchema,

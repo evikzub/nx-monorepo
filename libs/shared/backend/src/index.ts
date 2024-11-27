@@ -37,3 +37,6 @@ export * from './consul/consul.service';
 // Provider
 export * from './provider/provider.module';
 export * from './provider/provider.service';
+// Pino Logger
+export * from './logger/pino-logger.service';
+export * from './logger/logger.module';
