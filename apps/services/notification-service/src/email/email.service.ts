@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { Injectable } from '@nestjs/common';
+import { AppConfigService, PinoLoggerService } from '@microservices-app/shared/backend';
 import { NotificationPayload, NotificationType, ReportDataMessage } from '@microservices-app/shared/types';
 import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
@@ -8,11 +8,14 @@ import * as path from 'path';
 
 @Injectable()
 export class EmailService {
-  private readonly logger = new Logger(EmailService.name);
+  // private readonly logger = new Logger(EmailService.name);
   private readonly transporter: nodemailer.Transporter;
   private readonly templates: Map<string, handlebars.TemplateDelegate> = new Map();
 
-  constructor(private readonly config: AppConfigService) {
+  constructor(
+    private readonly config: AppConfigService,
+    private readonly logger: PinoLoggerService
+  ) {
     this.transporter = nodemailer.createTransport({
       // Configure based on your email provider
       host: config.envConfig.emailService.host,
@@ -32,6 +35,7 @@ export class EmailService {
 
     // In test
     if (this.config.envConfig.nodeEnv === 'test') {
+      // TODO: Fix this
       return path.join(process.cwd(), 'apps/services/notification-service/src/assets/templates/emails');
     }
     
@@ -104,7 +108,7 @@ export class EmailService {
     }
 
     return template;
-}
+  }
 
   async sendEmail(payload: NotificationPayload): Promise<void> {
     try {
@@ -155,7 +159,7 @@ export class EmailService {
 
       this.logger.debug(`Email sent to ${payload.recipient}`);
     } catch (error) {
-      this.logger.error(`Failed to send email: ${error.message}`);
+      this.logger.error(`Failed to send report: ${error.message}`);
       throw error;
     }
   }

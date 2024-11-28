@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EmailService } from './email.service';
-import { AppConfigService } from '@microservices-app/shared/backend';
+import { AppConfigService, PinoLoggerService } from '@microservices-app/shared/backend';
 import {
   NotificationPayload,
   NotificationType,
@@ -24,10 +24,15 @@ describe('EmailService', () => {
     envConfig: {
       nodeEnv: 'test',
       emailService: emailConfig,
-      //   app: {
-      //     name: 'Test App'
-      //   }
     },
+  };
+
+  const mockPinoLoggerService = {
+    setContext: jest.fn(),
+    log: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(), 
   };
 
   beforeEach(async () => {
@@ -37,6 +42,10 @@ describe('EmailService', () => {
         {
           provide: AppConfigService,
           useValue: mockConfigService,
+        },
+        {
+          provide: PinoLoggerService,
+          useValue: mockPinoLoggerService,
         },
       ],
     }).compile();
@@ -80,7 +89,7 @@ describe('EmailService', () => {
     //expect(result).toBeDefined();
 
     const callArg: any = sendMailMock.mock.calls[0][0];
-    console.log('callArg', callArg);
+    //console.log('callArg', callArg);
     expect(callArg.to).toBe(payload.recipient);
     expect(callArg.html).toContain('Hello John');
     expect(callArg.html).toContain('http://example.com/verify');

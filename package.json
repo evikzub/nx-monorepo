@@ -12,12 +12,21 @@
     "test:cov:watch": "jest --coverage --watch",
     "copy:templates": "copyfiles -u 4 \"apps/services/notification-service/src/templates/**/*\" dist/apps/services/notification-service",
     "start:notification": "npm run copy:templates && nx serve notification-service",
-    "test:e2e": "nx e2e user-service-e2e"
+    "test:e2e": "nx e2e user-service-e2e",
+    "dev": "nx serve api-gw --configuration=development",
+    "dev:docker": "scripts/dev-up.sh",
+    "dev:docker:win": "scripts/dev-up.bat",
+    "dev:down": "scripts/dev-down.sh",
+    "dev:logs": "scripts/dev-logs.sh",
+    "dev:test": "nx test api-gw --watch",
+    "dev:lint": "nx lint api-gw --fix",
+    "start:user-service:hmr": "nx serve user-service --configuration=development"
   },
   "private": true,
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
     "@dnd-kit/sortable": "^8.0.0",
+    "@elastic/elasticsearch": "^8.16.2",
     "@golevelup/nestjs-rabbitmq": "^5.6.1",
     "@hookform/resolvers": "^3.9.1",
     "@nestjs/axios": "^3.1.1",
@@ -56,6 +65,9 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.13.1",
+    "pino": "^9.5.0",
+    "pino-elasticsearch": "^8.1.0",
+    "pino-pretty": "^13.0.0",
     "postgres": "^3.4.5",
     "puppeteer": "^23.8.0",
     "react": "18.3.1",
@@ -132,6 +144,7 @@
     "postcss": "^8.4.49",
     "prettier": "^2.6.2",
     "rollup": "^4.14.0",
+    "run-script-webpack-plugin": "^0.2.0",
     "shadcn-ui": "^0.9.3",
     "supertest": "^7.0.0",
     "swc-loader": "0.1.15",
@@ -144,7 +157,9 @@
     "typescript-eslint": "^8.0.0",
     "vite": "^5.0.0",
     "vitest": "^1.3.1",
+    "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0",
     "zustand": "^5.0.1"
   }
 }
